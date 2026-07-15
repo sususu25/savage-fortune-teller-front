@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { CalendarDays, Clock3, MapPin, Share2, Sparkles } from "lucide-react";
+import { CalendarDays, Check, Clock3, Copy, MapPin, Share2, Sparkles } from "lucide-react";
 import "./styles.css";
 
 type ArchetypeCode =
@@ -24,6 +24,23 @@ type ReadingResponse = {
   section_titles: Record<string, string>;
   sections: Record<string, string>;
   all_archetype_scores?: Record<string, { label: string; score: number }>;
+};
+
+type ShareCreateResponse = {
+  share_id: string;
+  share_path: string;
+  share_url: string | null;
+};
+
+type ShareResponse = {
+  share_id: string;
+  result_payload: ReadingResponse;
+  input?: {
+    birth_date?: string;
+    birth_time?: string;
+    birth_city?: string;
+    birth_country?: string;
+  } | null;
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000/api/v1";
@@ -113,12 +130,65 @@ function App() {
   const [timezone, setTimezone] = React.useState("Asia/Seoul");
   const [reading, setReading] = React.useState<ReadingResponse>(demoReading);
   const [loading, setLoading] = React.useState(false);
+  const [shareLoading, setShareLoading] = React.useState(false);
+  const [shareLink, setShareLink] = React.useState("");
+  const [copied, setCopied] = React.useState(false);
   const [error, setError] = React.useState("");
+
+  React.useEffect(() => {
+    const match = window.location.pathname.match(/^\/r\/([^/]+)$/);
+    if (!match) {
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+    setError("");
+
+    fetch(`${API_BASE_URL}/shares/${encodeURIComponent(match[1])}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`That shared reading vanished with HTTP ${response.status}.`);
+        }
+
+        return response.json() as Promise<ShareResponse>;
+      })
+      .then((data) => {
+        if (cancelled) {
+          return;
+        }
+
+        setReading(data.result_payload);
+        setShareLink(window.location.href);
+        if (data.input) {
+          setBirthDate(data.input.birth_date ?? birthDate);
+          setBirthTime(data.input.birth_time ?? birthTime);
+          setBirthCity(data.input.birth_city ?? birthCity);
+          setBirthCountry(data.input.birth_country ?? birthCountry);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "The shared reading refused to appear.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function requestReading(event: React.FormEvent) {
     event.preventDefault();
     setLoading(true);
     setError("");
+    setShareLink("");
+    setCopied(false);
 
     try {
       const response = await fetch(`${API_BASE_URL}/readings`, {
@@ -144,6 +214,67 @@ function App() {
       setError(err instanceof Error ? err.message : "The oracle refused to cooperate.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function copyToClipboard(value: string) {
+    if (!navigator.clipboard) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(value);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  }
+
+  async function createShareLink() {
+    setShareLoading(true);
+    setError("");
+    setCopied(false);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/shares`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          result_payload: reading,
+          input: {
+            birth_date: birthDate,
+            birth_time: birthTime,
+            birth_city: birthCity,
+            birth_country: birthCountry,
+          },
+          source: "web",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`The share spell fizzled with HTTP ${response.status}.`);
+      }
+
+      const data = (await response.json()) as ShareCreateResponse;
+      const nextShareLink = data.share_url ?? `${window.location.origin}${data.share_path}`;
+      setShareLink(nextShareLink);
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Savage Fortune Teller",
+            text: reading.primary_type.share_text,
+            url: nextShareLink,
+          });
+        } catch (shareError) {
+          if (!(shareError instanceof DOMException && shareError.name === "AbortError")) {
+            throw shareError;
+          }
+        }
+      } else {
+        await copyToClipboard(nextShareLink);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "The share link refused to materialize.");
+    } finally {
+      setShareLoading(false);
     }
   }
 
@@ -238,11 +369,29 @@ function App() {
             <button
               className="share-button"
               type="button"
-              onClick={() => navigator.clipboard?.writeText(reading.primary_type.share_text)}
+              onClick={createShareLink}
+              disabled={shareLoading}
             >
               <Share2 size={17} />
-              Copy share line
+              {shareLoading ? "Creating link" : "Share result"}
             </button>
+            {shareLink && (
+              <div className="share-tools">
+                <div className="share-url" title={shareLink}>
+                  {shareLink}
+                </div>
+                <button type="button" onClick={() => copyToClipboard(shareLink)} aria-label="Copy share link">
+                  {copied ? <Check size={16} /> : <Copy size={16} />}
+                </button>
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(reading.primary_type.share_text)}&url=${encodeURIComponent(shareLink)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  X
+                </a>
+              </div>
+            )}
           </div>
         </article>
 

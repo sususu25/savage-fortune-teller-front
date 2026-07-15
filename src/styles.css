@@ -158,6 +158,12 @@ input:focus {
   margin-top: 4px;
 }
 
+.birth-form > button:disabled,
+.share-button:disabled {
+  cursor: wait;
+  filter: grayscale(0.25) brightness(0.82);
+}
+
 .error {
   margin-top: 14px;
   border: 1px solid rgba(196, 91, 71, 0.48);
@@ -274,6 +280,49 @@ h2 {
   padding: 0 18px;
 }
 
+.share-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px 42px;
+  gap: 8px;
+  width: min(100%, 520px);
+  margin-top: 12px;
+}
+
+.share-url {
+  min-width: 0;
+  height: 42px;
+  border: 1px solid rgba(201, 170, 99, 0.26);
+  padding: 11px 12px;
+  color: #d9c99e;
+  background: rgba(4, 6, 10, 0.58);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-tools button,
+.share-tools a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(224, 191, 110, 0.58);
+  color: #f1d98f;
+  background: rgba(9, 11, 15, 0.78);
+  text-decoration: none;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.share-tools button:hover,
+.share-tools a:hover {
+  border-color: rgba(224, 191, 110, 0.9);
+  color: #11100d;
+  background: #e2c16e;
+}
+
 .score-board {
   display: grid;
   gap: 10px;
@@ -371,5 +420,9 @@ h2 {
   .score-row div {
     grid-column: 1 / -1;
     grid-row: 2;
+  }
+
+  .share-tools {
+    grid-template-columns: minmax(0, 1fr) 40px 40px;
   }
 }
