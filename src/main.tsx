@@ -88,7 +88,7 @@ const archetypeProfiles: Partial<Record<ArchetypeCode, ArchetypeProfile>> = {
   burdened_one: {
     name: "The Burdened One",
     alias: "The Unpaid Project Manager of the Universe",
-    image: "/archetypes/burdened-one.png",
+    image: "/archetypes/burdened-one.webp",
     curse: "Chronically responsible, spiritually employed without benefits.",
     role: "The friend who says 'I'll handle it' and then quietly becomes a load-bearing wall.",
     bait: "Mistaking exhaustion for maturity because Saturn handed you a clipboard too early.",
@@ -97,7 +97,7 @@ const archetypeProfiles: Partial<Record<ArchetypeCode, ArchetypeProfile>> = {
   chaos_magnet: {
     name: "The Chaos Magnet",
     alias: "The Human Plot Twist",
-    image: "/archetypes/chaos-magnet.png",
+    image: "/archetypes/chaos-magnet.webp",
     curse: "A walking season finale with suspiciously good timing.",
     role: "The person who enters a calm room and somehow unlocks the bonus crisis.",
     bait: "Calling every impulse 'a sign' when sometimes it is just boredom wearing eyeliner.",
@@ -106,7 +106,7 @@ const archetypeProfiles: Partial<Record<ArchetypeCode, ArchetypeProfile>> = {
   overthinker: {
     name: "The Overthinker",
     alias: "The 47 Tabs Open Personality",
-    image: "/archetypes/overthinker.png",
+    image: "/archetypes/overthinker.webp",
     curse: "Mentally buffering, emotionally litigating, cosmically over-researched.",
     role: "The friend who can turn 'sure' into a twelve-part courtroom drama.",
     bait: "Believing the right analysis will save you from having to feel something.",
@@ -115,7 +115,7 @@ const archetypeProfiles: Partial<Record<ArchetypeCode, ArchetypeProfile>> = {
   dangerous_heart: {
     name: "The Dangerous Heart",
     alias: "The Romantic Red Flag with Good Branding",
-    image: "/archetypes/dangerous-heart.png",
+    image: "/archetypes/dangerous-heart.webp",
     curse: "Seductive intensity with a suspicious basement.",
     role: "The friend whose love life needs a soundtrack, subtitles, and legal counsel.",
     bait: "Confusing emotional activation with destiny because calm feels underproduced.",
@@ -124,7 +124,7 @@ const archetypeProfiles: Partial<Record<ArchetypeCode, ArchetypeProfile>> = {
   haunted_dreamer: {
     name: "The Haunted Dreamer",
     alias: "The Delulu Oracle",
-    image: "/archetypes/haunted-dreamer.png",
+    image: "/archetypes/haunted-dreamer.webp",
     curse: "Psychic enough to be annoying, avoidant enough to be expensive.",
     role: "The friend who reads the room, absorbs the room, then needs three days in the fog.",
     bait: "Calling a fantasy 'intuition' because the playlist was convincing.",
@@ -133,7 +133,7 @@ const archetypeProfiles: Partial<Record<ArchetypeCode, ArchetypeProfile>> = {
   unfinished_legend: {
     name: "The Unfinished Legend",
     alias: "The Main Character in Development Hell",
-    image: "/archetypes/unfinished-legend.png",
+    image: "/archetypes/unfinished-legend.webp",
     curse: "Huge destiny, suspiciously delayed shipping.",
     role: "The friend with main character energy and a release date the universe keeps moving.",
     bait: "Waiting for a sign when the sign is already yelling 'do the damn thing.'",
@@ -142,32 +142,32 @@ const archetypeProfiles: Partial<Record<ArchetypeCode, ArchetypeProfile>> = {
   main_character_energy: {
     name: "The Discourse's Main Character",
     alias: "The Discourse's Main Character",
-    image: "/archetypes/unfinished-legend.png",
+    image: "/archetypes/unfinished-legend.webp",
   },
   moon_flood: {
     name: "The Human Weather System",
     alias: "The Human Weather System",
-    image: "/archetypes/haunted-dreamer.png",
+    image: "/archetypes/haunted-dreamer.webp",
   },
   venus_maximalist: {
     name: "The Standards With Their Own Zip Code",
     alias: "The Standards With Their Own Zip Code",
-    image: "/archetypes/dangerous-heart.png",
+    image: "/archetypes/dangerous-heart.webp",
   },
   mars_ignition: {
     name: "The Fight-or-Also-Fight Response",
     alias: "The Fight-or-Also-Fight Response",
-    image: "/archetypes/chaos-magnet.png",
+    image: "/archetypes/chaos-magnet.webp",
   },
   jupiter_evangelist: {
     name: "The Free Advice Philanthropist",
     alias: "The Free Advice Philanthropist",
-    image: "/archetypes/unfinished-legend.png",
+    image: "/archetypes/unfinished-legend.webp",
   },
   ascendant_mask: {
     name: "The Different Person Depending on the Lighting",
     alias: "The Different Person Depending on the Lighting",
-    image: "/archetypes/overthinker.png",
+    image: "/archetypes/overthinker.webp",
   },
 };
 
