@@ -519,6 +519,22 @@ function App() {
     }
   }
 
+  function startNewReading() {
+    setHasReading(false);
+    setIsRevealing(false);
+    setLoading(false);
+    setShareLink("");
+    setCopied(false);
+    setPremiumNotice(false);
+    setError("");
+
+    if (window.location.pathname.startsWith("/r/")) {
+      window.history.pushState({}, "", "/");
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   const active = getActiveProfile(reading);
   const scoreMap: Record<string, { label: string; score: number }> = reading.all_archetype_scores ?? {};
   const scores = Object.entries(scoreMap).sort((a, b) => b[1].score - a[1].score);
@@ -528,9 +544,11 @@ function App() {
     ["Fatal bait", active.bait],
     ["Prescription", active.prescription],
   ].filter((item): item is [string, string] => Boolean(item[1]));
+  const isResultMode = loading || isRevealing || hasReading;
 
   return (
-    <main className="shell">
+    <main className={isResultMode ? "shell shell-result-mode" : "shell"}>
+      {!isResultMode && (
       <section className="oracle-panel">
         <div className="brand">
           <span className="brand-mark">SFT</span>
@@ -620,8 +638,9 @@ function App() {
 
         {error && <div className="error">{error}</div>}
       </section>
+      )}
 
-      <section className={hasReading ? "result-panel" : "result-panel result-panel-empty"}>
+      <section className={hasReading ? "result-panel result-panel-expanded" : "result-panel result-panel-empty"}>
         {loading || isRevealing ? (
           <div className="ritual-panel" aria-live="polite">
             <div className={isRevealing ? "tarot-back revealing" : "tarot-back"}>
@@ -691,6 +710,14 @@ function App() {
               >
                 <FileDown size={17} />
                 PDF report - $2
+              </button>
+              <button
+                className="secondary-button"
+                type="button"
+                onClick={startNewReading}
+              >
+                <Sparkles size={17} />
+                New roast
               </button>
             </div>
             {premiumNotice && (

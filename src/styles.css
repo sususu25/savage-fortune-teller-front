@@ -43,6 +43,10 @@ button {
   padding: 24px;
 }
 
+.shell-result-mode {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .oracle-panel,
 .result-panel {
   min-width: 0;
@@ -243,7 +247,8 @@ select:focus {
 
 .birth-form > button,
 .share-button,
-.pdf-button {
+.pdf-button,
+.secondary-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -262,7 +267,8 @@ select:focus {
 
 .birth-form > button:disabled,
 .share-button:disabled,
-.pdf-button:disabled {
+.pdf-button:disabled,
+.secondary-button:disabled {
   cursor: wait;
   filter: grayscale(0.25) brightness(0.82);
 }
@@ -316,6 +322,10 @@ select:focus {
 
 .result-panel {
   padding: 24px;
+}
+
+.result-panel-expanded {
+  min-height: calc(100vh - 48px);
 }
 
 .result-panel-empty {
@@ -544,17 +554,20 @@ h2 {
 }
 
 .share-button,
-.pdf-button {
+.pdf-button,
+.secondary-button {
   width: fit-content;
   padding: 0 18px;
 }
 
-.pdf-button {
+.pdf-button,
+.secondary-button {
   color: #f1d98f;
   background: rgba(9, 11, 15, 0.78);
 }
 
-.pdf-button:hover {
+.pdf-button:hover,
+.secondary-button:hover {
   color: #11100d;
   background: #e2c16e;
 }
