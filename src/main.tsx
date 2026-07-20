@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { CalendarDays, Check, Clock3, Copy, MapPin, Search, Share2, Sparkles } from "lucide-react";
+import { CalendarDays, Check, Clock3, Copy, FileDown, MapPin, Search, Share2, Sparkles } from "lucide-react";
 import "./styles.css";
 
 type ArchetypeCode =
@@ -275,6 +275,7 @@ function App() {
   const [shareLoading, setShareLoading] = React.useState(false);
   const [shareLink, setShareLink] = React.useState("");
   const [copied, setCopied] = React.useState(false);
+  const [premiumNotice, setPremiumNotice] = React.useState(false);
   const [error, setError] = React.useState("");
 
   React.useEffect(() => {
@@ -421,6 +422,7 @@ function App() {
     setIsRevealing(false);
     setShareLink("");
     setCopied(false);
+    setPremiumNotice(false);
 
     try {
       const response = await fetch(`${API_BASE_URL}/readings`, {
@@ -672,15 +674,30 @@ function App() {
               </div>
             )}
 
-            <button
-              className="share-button"
-              type="button"
-              onClick={createShareLink}
-              disabled={shareLoading}
-            >
-              <Share2 size={17} />
-              {shareLoading ? "Creating link" : "Share result"}
-            </button>
+            <div className="result-actions">
+              <button
+                className="share-button"
+                type="button"
+                onClick={createShareLink}
+                disabled={shareLoading}
+              >
+                <Share2 size={17} />
+                {shareLoading ? "Creating link" : "Share result"}
+              </button>
+              <button
+                className="pdf-button"
+                type="button"
+                onClick={() => setPremiumNotice(true)}
+              >
+                <FileDown size={17} />
+                PDF report - $2
+              </button>
+            </div>
+            {premiumNotice && (
+              <p className="premium-note">
+                Premium PDF is being kept behind the velvet rope for now. Payment and download access are coming soon.
+              </p>
+            )}
             {shareLink && (
               <div className="share-tools">
                 <div className="share-url" title={shareLink}>

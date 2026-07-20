@@ -242,7 +242,8 @@ select:focus {
 }
 
 .birth-form > button,
-.share-button {
+.share-button,
+.pdf-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -260,7 +261,8 @@ select:focus {
 }
 
 .birth-form > button:disabled,
-.share-button:disabled {
+.share-button:disabled,
+.pdf-button:disabled {
   cursor: wait;
   filter: grayscale(0.25) brightness(0.82);
 }
@@ -535,9 +537,36 @@ h2 {
   line-height: 1.38;
 }
 
-.share-button {
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.share-button,
+.pdf-button {
   width: fit-content;
   padding: 0 18px;
+}
+
+.pdf-button {
+  color: #f1d98f;
+  background: rgba(9, 11, 15, 0.78);
+}
+
+.pdf-button:hover {
+  color: #11100d;
+  background: #e2c16e;
+}
+
+.premium-note {
+  max-width: 520px;
+  margin: 10px 0 0;
+  border-left: 2px solid rgba(226, 193, 110, 0.6);
+  padding-left: 12px;
+  color: #cfc1a1;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .share-tools {
