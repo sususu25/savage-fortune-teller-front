@@ -139,6 +139,36 @@ const archetypeProfiles: Partial<Record<ArchetypeCode, ArchetypeProfile>> = {
     bait: "Waiting for a sign when the sign is already yelling 'do the damn thing.'",
     prescription: "Move one ugly inch forward. Potential is cute; execution pays rent.",
   },
+  main_character_energy: {
+    name: "The Discourse's Main Character",
+    alias: "The Discourse's Main Character",
+    image: "/archetypes/unfinished-legend.png",
+  },
+  moon_flood: {
+    name: "The Human Weather System",
+    alias: "The Human Weather System",
+    image: "/archetypes/haunted-dreamer.png",
+  },
+  venus_maximalist: {
+    name: "The Standards With Their Own Zip Code",
+    alias: "The Standards With Their Own Zip Code",
+    image: "/archetypes/dangerous-heart.png",
+  },
+  mars_ignition: {
+    name: "The Fight-or-Also-Fight Response",
+    alias: "The Fight-or-Also-Fight Response",
+    image: "/archetypes/chaos-magnet.png",
+  },
+  jupiter_evangelist: {
+    name: "The Free Advice Philanthropist",
+    alias: "The Free Advice Philanthropist",
+    image: "/archetypes/unfinished-legend.png",
+  },
+  ascendant_mask: {
+    name: "The Different Person Depending on the Lighting",
+    alias: "The Different Person Depending on the Lighting",
+    image: "/archetypes/overthinker.png",
+  },
 };
 
 const demoReading: ReadingResponse = {
@@ -184,6 +214,13 @@ const demoReading: ReadingResponse = {
 };
 
 const defaultLocation = fallbackLocations[0];
+const hourOptions = Array.from({ length: 24 }, (_, hour) => hour.toString().padStart(2, "0"));
+const minuteOptions = Array.from({ length: 60 }, (_, minute) => minute.toString().padStart(2, "0"));
+
+function updateTimePart(value: string, part: "hour" | "minute", nextPart: string) {
+  const [hour = "00", minute = "00"] = value.split(":");
+  return part === "hour" ? `${nextPart}:${minute}` : `${hour}:${nextPart}`;
+}
 
 function isValidIsoDate(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00`));
@@ -498,12 +535,27 @@ function App() {
             <span>
               <Clock3 size={15} /> Birth time <em>required</em>
             </span>
-            <input
-              value={birthTime}
-              onChange={(event) => setBirthTime(event.target.value)}
-              type="time"
-              aria-label="Birth time"
-            />
+            <div className="time-selects" aria-label="Birth time">
+              <select
+                value={birthTime.split(":")[0] ?? "00"}
+                onChange={(event) => setBirthTime((value) => updateTimePart(value, "hour", event.target.value))}
+                aria-label="Birth hour in 24-hour format"
+              >
+                {hourOptions.map((hour) => (
+                  <option key={hour} value={hour}>{hour}</option>
+                ))}
+              </select>
+              <span>:</span>
+              <select
+                value={birthTime.split(":")[1] ?? "00"}
+                onChange={(event) => setBirthTime((value) => updateTimePart(value, "minute", event.target.value))}
+                aria-label="Birth minute"
+              >
+                {minuteOptions.map((minute) => (
+                  <option key={minute} value={minute}>{minute}</option>
+                ))}
+              </select>
+            </div>
           </label>
           <label className="wide location-field">
             <span>

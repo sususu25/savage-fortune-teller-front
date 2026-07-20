@@ -26,7 +26,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -135,7 +136,8 @@ label em {
   grid-column: 1 / -1;
 }
 
-input {
+input,
+select {
   min-width: 0;
   height: 42px;
   border: 1px solid rgba(201, 170, 99, 0.26);
@@ -146,8 +148,23 @@ input {
   outline: none;
 }
 
-input:focus {
+input:focus,
+select:focus {
   border-color: rgba(218, 183, 98, 0.76);
+}
+
+.time-selects {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+}
+
+.time-selects span {
+  justify-content: center;
+  color: #d8b867;
+  font-size: 18px;
+  line-height: 1;
 }
 
 .location-field {
@@ -303,10 +320,12 @@ input:focus {
   display: grid;
   grid-template-columns: minmax(180px, 270px) minmax(0, 1fr);
   gap: 22px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .portrait-frame {
+  align-self: start;
+  width: 100%;
   border: 1px solid rgba(226, 193, 110, 0.55);
   padding: 10px;
   background: #090b10;
@@ -316,7 +335,8 @@ input:focus {
   display: block;
   width: 100%;
   aspect-ratio: 4 / 5;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   background: #05070b;
   filter: sepia(0.08) saturate(0.95) contrast(1.05);
 }
