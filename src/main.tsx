@@ -9,7 +9,13 @@ type ArchetypeCode =
   | "overthinker"
   | "dangerous_heart"
   | "haunted_dreamer"
-  | "unfinished_legend";
+  | "unfinished_legend"
+  | "main_character_energy"
+  | "moon_flood"
+  | "venus_maximalist"
+  | "mars_ignition"
+  | "jupiter_evangelist"
+  | "ascendant_mask";
 
 type ReadingResponse = {
   primary_type: {
@@ -50,44 +56,35 @@ type LocationOption = {
   latitude: number;
   longitude: number;
   timezone: string;
+  normalized_query?: string;
+  source?: string;
+};
+
+type LocationSearchResponse = {
+  locations?: Omit<LocationOption, "id">[];
+  location?: Omit<LocationOption, "id">;
 };
 
 type ArchetypeProfile = {
   name: string;
   alias: string;
-  image: string;
-  curse: string;
-  role: string;
-  bait: string;
-  prescription: string;
+  image?: string;
+  curse?: string;
+  role?: string;
+  bait?: string;
+  prescription?: string;
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000/api/v1";
 
-const locations: LocationOption[] = [
-  { id: "new-york-us", city: "New York", country: "United States", latitude: 40.7128, longitude: -74.006, timezone: "America/New_York" },
-  { id: "los-angeles-us", city: "Los Angeles", country: "United States", latitude: 34.0522, longitude: -118.2437, timezone: "America/Los_Angeles" },
-  { id: "chicago-us", city: "Chicago", country: "United States", latitude: 41.8781, longitude: -87.6298, timezone: "America/Chicago" },
-  { id: "london-uk", city: "London", country: "United Kingdom", latitude: 51.5074, longitude: -0.1278, timezone: "Europe/London" },
-  { id: "toronto-ca", city: "Toronto", country: "Canada", latitude: 43.6532, longitude: -79.3832, timezone: "America/Toronto" },
-  { id: "vancouver-ca", city: "Vancouver", country: "Canada", latitude: 49.2827, longitude: -123.1207, timezone: "America/Vancouver" },
-  { id: "sydney-au", city: "Sydney", country: "Australia", latitude: -33.8688, longitude: 151.2093, timezone: "Australia/Sydney" },
-  { id: "melbourne-au", city: "Melbourne", country: "Australia", latitude: -37.8136, longitude: 144.9631, timezone: "Australia/Melbourne" },
-  { id: "paris-fr", city: "Paris", country: "France", latitude: 48.8566, longitude: 2.3522, timezone: "Europe/Paris" },
-  { id: "berlin-de", city: "Berlin", country: "Germany", latitude: 52.52, longitude: 13.405, timezone: "Europe/Berlin" },
-  { id: "amsterdam-nl", city: "Amsterdam", country: "Netherlands", latitude: 52.3676, longitude: 4.9041, timezone: "Europe/Amsterdam" },
-  { id: "tokyo-jp", city: "Tokyo", country: "Japan", latitude: 35.6762, longitude: 139.6503, timezone: "Asia/Tokyo" },
+const fallbackLocations: LocationOption[] = [
   { id: "seoul-kr", city: "Seoul", country: "South Korea", latitude: 37.5665, longitude: 126.978, timezone: "Asia/Seoul" },
-  { id: "busan-kr", city: "Busan", country: "South Korea", latitude: 35.1796, longitude: 129.0756, timezone: "Asia/Seoul" },
-  { id: "singapore-sg", city: "Singapore", country: "Singapore", latitude: 1.3521, longitude: 103.8198, timezone: "Asia/Singapore" },
-  { id: "hong-kong-hk", city: "Hong Kong", country: "Hong Kong", latitude: 22.3193, longitude: 114.1694, timezone: "Asia/Hong_Kong" },
-  { id: "mumbai-in", city: "Mumbai", country: "India", latitude: 19.076, longitude: 72.8777, timezone: "Asia/Kolkata" },
-  { id: "dubai-ae", city: "Dubai", country: "United Arab Emirates", latitude: 25.2048, longitude: 55.2708, timezone: "Asia/Dubai" },
-  { id: "mexico-city-mx", city: "Mexico City", country: "Mexico", latitude: 19.4326, longitude: -99.1332, timezone: "America/Mexico_City" },
-  { id: "sao-paulo-br", city: "Sao Paulo", country: "Brazil", latitude: -23.5558, longitude: -46.6396, timezone: "America/Sao_Paulo" },
+  { id: "gunpo-kr", city: "Gunpo", country: "South Korea", latitude: 37.3617, longitude: 126.9352, timezone: "Asia/Seoul" },
+  { id: "new-york-us", city: "New York", country: "United States", latitude: 40.7128, longitude: -74.006, timezone: "America/New_York" },
+  { id: "london-uk", city: "London", country: "United Kingdom", latitude: 51.5074, longitude: -0.1278, timezone: "Europe/London" },
 ];
 
-const archetypes: Record<ArchetypeCode, ArchetypeProfile> = {
+const archetypeProfiles: Partial<Record<ArchetypeCode, ArchetypeProfile>> = {
   burdened_one: {
     name: "The Burdened One",
     alias: "The Unpaid Project Manager of the Universe",
@@ -186,7 +183,7 @@ const demoReading: ReadingResponse = {
   },
 };
 
-const defaultLocation = locations.find((location) => location.id === "seoul-kr") ?? locations[0];
+const defaultLocation = fallbackLocations[0];
 
 function isValidIsoDate(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00`));
@@ -196,11 +193,40 @@ function isValidTime(value: string) {
   return /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
 }
 
+function makeLocationId(location: Omit<LocationOption, "id">) {
+  return `${location.city}-${location.country}-${location.latitude}-${location.longitude}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-");
+}
+
+function toLocationOption(location: Omit<LocationOption, "id">): LocationOption {
+  return {
+    ...location,
+    id: makeLocationId(location),
+  };
+}
+
+function getActiveProfile(result: ReadingResponse): ArchetypeProfile {
+  const configured = archetypeProfiles[result.primary_type.code];
+
+  return {
+    name: configured?.name ?? result.primary_type.label,
+    alias: configured?.alias ?? result.primary_type.viral_alias,
+    image: configured?.image,
+    curse: configured?.curse,
+    role: configured?.role,
+    bait: configured?.bait,
+    prescription: configured?.prescription,
+  };
+}
+
 function App() {
   const [birthDate, setBirthDate] = React.useState("1995-12-18");
   const [birthTime, setBirthTime] = React.useState("14:30");
   const [locationQuery, setLocationQuery] = React.useState(`${defaultLocation.city}, ${defaultLocation.country}`);
   const [selectedLocation, setSelectedLocation] = React.useState<LocationOption | null>(defaultLocation);
+  const [suggestions, setSuggestions] = React.useState<LocationOption[]>([]);
+  const [locationLoading, setLocationLoading] = React.useState(false);
   const [reading, setReading] = React.useState<ReadingResponse>(demoReading);
   const [loading, setLoading] = React.useState(false);
   const [shareLoading, setShareLoading] = React.useState(false);
@@ -208,17 +234,63 @@ function App() {
   const [copied, setCopied] = React.useState(false);
   const [error, setError] = React.useState("");
 
-  const suggestions = React.useMemo(() => {
-    const query = locationQuery.trim().toLowerCase();
+  React.useEffect(() => {
+    const query = locationQuery.trim();
+    const selectedLabel = selectedLocation ? `${selectedLocation.city}, ${selectedLocation.country}` : "";
 
-    if (query.length < 2) {
-      return [];
+    if (query.length < 2 || query === selectedLabel) {
+      setSuggestions([]);
+      setLocationLoading(false);
+      return;
     }
 
-    return locations
-      .filter((location) => `${location.city}, ${location.country}`.toLowerCase().includes(query))
-      .slice(0, 6);
-  }, [locationQuery]);
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      setLocationLoading(true);
+
+      const params = new URLSearchParams({ city: query, limit: "8" });
+
+      fetch(`${API_BASE_URL}/locations/search?${params.toString()}`, { signal: controller.signal })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Location search failed with HTTP ${response.status}.`);
+          }
+          return response.json() as Promise<LocationSearchResponse>;
+        })
+        .then((data) => {
+          const remoteLocations = data.locations ?? (data.location ? [data.location] : []);
+          const nextSuggestions = remoteLocations.map(toLocationOption);
+
+          if (nextSuggestions.length > 0) {
+            setSuggestions(nextSuggestions);
+            return;
+          }
+
+          setSuggestions(
+            fallbackLocations.filter((location) =>
+              `${location.city}, ${location.country}`.toLowerCase().includes(query.toLowerCase()),
+            ),
+          );
+        })
+        .catch((err) => {
+          if (err instanceof DOMException && err.name === "AbortError") {
+            return;
+          }
+
+          setSuggestions(
+            fallbackLocations.filter((location) =>
+              `${location.city}, ${location.country}`.toLowerCase().includes(query.toLowerCase()),
+            ),
+          );
+        })
+        .finally(() => setLocationLoading(false));
+    }, 250);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [locationQuery, selectedLocation]);
 
   React.useEffect(() => {
     const match = window.location.pathname.match(/^\/r\/([^/]+)$/);
@@ -274,6 +346,7 @@ function App() {
   function chooseLocation(location: LocationOption) {
     setSelectedLocation(location);
     setLocationQuery(`${location.city}, ${location.country}`);
+    setSuggestions([]);
     setError("");
   }
 
@@ -388,11 +461,15 @@ function App() {
     }
   }
 
-  const active = archetypes[reading.primary_type.code];
+  const active = getActiveProfile(reading);
   const scoreMap: Record<string, { label: string; score: number }> = reading.all_archetype_scores ?? {};
-  const scores = Object.entries(scoreMap)
-    .sort((a, b) => b[1].score - a[1].score)
-    .slice(0, 6);
+  const scores = Object.entries(scoreMap).sort((a, b) => b[1].score - a[1].score);
+  const dossierItems = [
+    ["Signature curse", active.curse],
+    ["Social function", active.role],
+    ["Fatal bait", active.bait],
+    ["Prescription", active.prescription],
+  ].filter((item): item is [string, string] => Boolean(item[1]));
 
   return (
     <main className="shell">
@@ -413,9 +490,8 @@ function App() {
             <input
               value={birthDate}
               onChange={(event) => setBirthDate(event.target.value)}
-              inputMode="numeric"
-              placeholder="YYYY-MM-DD"
-              aria-label="Birth date in YYYY-MM-DD format"
+              type="date"
+              aria-label="Birth date"
             />
           </label>
           <label>
@@ -425,9 +501,8 @@ function App() {
             <input
               value={birthTime}
               onChange={(event) => setBirthTime(event.target.value)}
-              inputMode="numeric"
-              placeholder="HH:MM"
-              aria-label="Birth time in 24-hour HH:MM format"
+              type="time"
+              aria-label="Birth time"
             />
           </label>
           <label className="wide location-field">
@@ -442,7 +517,7 @@ function App() {
                   setLocationQuery(event.target.value);
                   setSelectedLocation(null);
                 }}
-                placeholder="Start typing: New York, London, Seoul..."
+                placeholder="Start typing any city..."
                 aria-label="Birthplace search"
               />
             </div>
@@ -450,8 +525,8 @@ function App() {
               <div className="suggestions">
                 {suggestions.map((location) => (
                   <button key={location.id} type="button" onClick={() => chooseLocation(location)}>
-                    <strong>{location.city}</strong>
-                    <span>{location.country} - {location.timezone}</span>
+                    <strong>{location.normalized_query ?? `${location.city}, ${location.country}`}</strong>
+                    <span>{location.timezone}{location.source ? ` - ${location.source}` : ""}</span>
                   </button>
                 ))}
               </div>
@@ -459,7 +534,7 @@ function App() {
           </label>
 
           <div className="auto-coordinates wide">
-            <span>Coordinates are auto-filled from birthplace.</span>
+            <span>{locationLoading ? "Searching birthplace..." : "Coordinates are auto-filled from birthplace."}</span>
             <b>{selectedLocation ? `${selectedLocation.latitude}, ${selectedLocation.longitude}` : "Select a city"}</b>
             <b>{selectedLocation?.timezone ?? "Timezone pending"}</b>
           </div>
@@ -471,26 +546,19 @@ function App() {
         </form>
 
         {error && <div className="error">{error}</div>}
-
-        <div className="deck-strip">
-          {Object.entries(archetypes).map(([code, item]) => (
-            <button
-              className={code === reading.primary_type.code ? "mini-card active" : "mini-card"}
-              key={code}
-              onClick={() => setReading({ ...demoReading, primary_type: { ...demoReading.primary_type, code: code as ArchetypeCode, label: item.name, viral_alias: item.alias } })}
-              type="button"
-            >
-              <img src={item.image} alt="" />
-              <span>{item.name}</span>
-            </button>
-          ))}
-        </div>
       </section>
 
       <section className="result-panel">
         <article className="result-card">
           <div className="portrait-frame">
-            <img src={active.image} alt={reading.primary_type.viral_alias} />
+            {active.image ? (
+              <img src={active.image} alt={reading.primary_type.viral_alias} />
+            ) : (
+              <div className="portrait-placeholder">
+                <span>SFT</span>
+                <b>{reading.primary_type.result_badge}</b>
+              </div>
+            )}
           </div>
           <div className="result-copy">
             <p className="score">{reading.primary_type.score}% - {reading.primary_type.result_badge}</p>
@@ -498,24 +566,16 @@ function App() {
             <p className="official-name">{reading.primary_type.label}</p>
             <p className="headline">{reading.primary_type.headline}</p>
 
-            <div className="dossier">
-              <div>
-                <span>Signature curse</span>
-                <b>{active.curse}</b>
+            {dossierItems.length > 0 && (
+              <div className="dossier">
+                {dossierItems.map(([label, value]) => (
+                  <div key={label}>
+                    <span>{label}</span>
+                    <b>{value}</b>
+                  </div>
+                ))}
               </div>
-              <div>
-                <span>Social function</span>
-                <b>{active.role}</b>
-              </div>
-              <div>
-                <span>Fatal bait</span>
-                <b>{active.bait}</b>
-              </div>
-              <div>
-                <span>Prescription</span>
-                <b>{active.prescription}</b>
-              </div>
-            </div>
+            )}
 
             <button
               className="share-button"
@@ -546,17 +606,22 @@ function App() {
           </div>
         </article>
 
-        <div className="score-board">
-          {scores.map(([code, value]) => (
-            <div className="score-row" key={code}>
-              <span>{archetypes[code as ArchetypeCode]?.alias ?? value.label}</span>
-              <div>
-                <i style={{ width: `${Math.max(value.score, 8)}%` }} />
-              </div>
-              <b>{value.score}%</b>
+        {scores.length > 0 && (
+          <details className="score-board">
+            <summary>Other chart suspects</summary>
+            <div className="score-list">
+              {scores.map(([code, value]) => (
+                <div className="score-row" key={code}>
+                  <span>{archetypeProfiles[code as ArchetypeCode]?.alias ?? value.label}</span>
+                  <div>
+                    <i style={{ width: `${Math.max(value.score, 8)}%` }} />
+                  </div>
+                  <b>{value.score}%</b>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </details>
+        )}
 
         <div className="section-grid">
           {Object.entries(reading.section_titles).map(([key, title]) => (
