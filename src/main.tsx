@@ -213,13 +213,17 @@ const demoReading: ReadingResponse = {
   },
 };
 
-const defaultLocation = fallbackLocations[0];
+const defaultLocation = fallbackLocations.find((location) => location.id === "london-uk") ?? fallbackLocations[0];
 const hourOptions = Array.from({ length: 24 }, (_, hour) => hour.toString().padStart(2, "0"));
 const minuteOptions = Array.from({ length: 60 }, (_, minute) => minute.toString().padStart(2, "0"));
 
 function updateTimePart(value: string, part: "hour" | "minute", nextPart: string) {
   const [hour = "00", minute = "00"] = value.split(":");
   return part === "hour" ? `${nextPart}:${minute}` : `${hour}:${nextPart}`;
+}
+
+function wait(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
 function isValidIsoDate(value: string) {
@@ -258,13 +262,15 @@ function getActiveProfile(result: ReadingResponse): ArchetypeProfile {
 }
 
 function App() {
-  const [birthDate, setBirthDate] = React.useState("1995-12-18");
-  const [birthTime, setBirthTime] = React.useState("14:30");
+  const [birthDate, setBirthDate] = React.useState("2000-01-01");
+  const [birthTime, setBirthTime] = React.useState("12:00");
   const [locationQuery, setLocationQuery] = React.useState(`${defaultLocation.city}, ${defaultLocation.country}`);
   const [selectedLocation, setSelectedLocation] = React.useState<LocationOption | null>(defaultLocation);
   const [suggestions, setSuggestions] = React.useState<LocationOption[]>([]);
   const [locationLoading, setLocationLoading] = React.useState(false);
   const [reading, setReading] = React.useState<ReadingResponse>(demoReading);
+  const [hasReading, setHasReading] = React.useState(false);
+  const [isRevealing, setIsRevealing] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [shareLoading, setShareLoading] = React.useState(false);
   const [shareLink, setShareLink] = React.useState("");
@@ -337,6 +343,8 @@ function App() {
 
     let cancelled = false;
     setLoading(true);
+    setHasReading(false);
+    setIsRevealing(false);
     setError("");
 
     fetch(`${API_BASE_URL}/shares/${encodeURIComponent(match[1])}`)
@@ -353,6 +361,7 @@ function App() {
         }
 
         setReading(data.result_payload);
+        setHasReading(true);
         setShareLink(window.location.href);
         if (data.input) {
           setBirthDate(data.input.birth_date ?? birthDate);
@@ -406,7 +415,10 @@ function App() {
       return;
     }
 
+    const ritualStartedAt = Date.now();
     setLoading(true);
+    setHasReading(false);
+    setIsRevealing(false);
     setShareLink("");
     setCopied(false);
 
@@ -429,11 +441,18 @@ function App() {
         throw new Error(`The oracle coughed up HTTP ${response.status}.`);
       }
 
-      setReading((await response.json()) as ReadingResponse);
+      const nextReading = (await response.json()) as ReadingResponse;
+      const elapsed = Date.now() - ritualStartedAt;
+      await wait(Math.max(1400 - elapsed, 0));
+      setIsRevealing(true);
+      await wait(620);
+      setReading(nextReading);
+      setHasReading(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "The oracle refused to cooperate.");
     } finally {
       setLoading(false);
+      setIsRevealing(false);
     }
   }
 
@@ -600,7 +619,31 @@ function App() {
         {error && <div className="error">{error}</div>}
       </section>
 
-      <section className="result-panel">
+      <section className={hasReading ? "result-panel" : "result-panel result-panel-empty"}>
+        {loading || isRevealing ? (
+          <div className="ritual-panel" aria-live="polite">
+            <div className={isRevealing ? "tarot-back revealing" : "tarot-back"}>
+              <span>SFT</span>
+            </div>
+            <p className="eyebrow">Consulting the chart</p>
+            <h2>The card is turning.</h2>
+            <p>
+              Coordinates are being translated into cosmic evidence. Please remain seated while the universe prepares its testimony.
+            </p>
+          </div>
+        ) : !hasReading ? (
+          <div className="intro-panel">
+            <div className="tarot-back">
+              <span>SFT</span>
+            </div>
+            <p className="eyebrow">Private until summoned</p>
+            <h2>Enter the birth details. The roast stays hidden until the card turns.</h2>
+            <p>
+              No type, no verdict, no spoilers. Just a sealed chart waiting to become everyone else's problem.
+            </p>
+          </div>
+        ) : (
+          <>
         <article className="result-card">
           <div className="portrait-frame">
             {active.image ? (
@@ -683,6 +726,8 @@ function App() {
             </article>
           ))}
         </div>
+          </>
+        )}
       </section>
     </main>
   );
