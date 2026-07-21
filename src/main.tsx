@@ -6,7 +6,11 @@ import {
   Check,
   Clock3,
   Compass,
+  Coins,
   Copy,
+  Heart,
+  HelpCircle,
+  Landmark,
   FileDown,
   Home,
   Mail,
@@ -17,8 +21,10 @@ import {
   Search,
   Share2,
   ShieldCheck,
+  Shuffle,
   Sparkles,
   Sun,
+  Telescope,
 } from "lucide-react";
 import "./styles.css";
 
@@ -124,6 +130,24 @@ type ArchetypeProfile = {
   role?: string;
   bait?: string;
   prescription?: string;
+};
+
+type ServiceCard = {
+  slug: string;
+  name: string;
+  shortName: string;
+  badge: string;
+  summary: string;
+  science: string;
+  status: "live" | "free" | "next";
+};
+
+type FortuneCard = {
+  name: string;
+  subtitle: string;
+  verdict: string;
+  receipt: string;
+  advice: string;
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000/api/v1";
@@ -429,6 +453,165 @@ const ARTICLES = [
   },
 ];
 
+const SERVICES: ServiceCard[] = [
+  {
+    slug: "birth-chart-roast",
+    name: "Birth Chart Roast",
+    shortName: "Roast",
+    badge: "live",
+    summary: "Your full chart gets processed into one main archetype, Big 3 receipts, and a verdict rude enough to be useful.",
+    science: "Uses Sun, Moon, Ascendant, houses, major aspects, element/modality balance, and weighted archetype rules.",
+    status: "live",
+  },
+  {
+    slug: "daily-card",
+    name: "Daily Card Pull",
+    shortName: "Daily Card",
+    badge: "free mini pull",
+    summary: "A tarot-ish one-card omen for the day. No mystical invoice, just a tiny symbolic slap on the wrist.",
+    science: "Uses a seeded card deck and archetypal meanings; good for mood, not life-changing paperwork.",
+    status: "free",
+  },
+  {
+    slug: "love-life-roast",
+    name: "Love Life Roast",
+    shortName: "Love",
+    badge: "chart lane",
+    summary: "Romantic pattern recognition for people who call chemistry destiny because calm feels underproduced.",
+    science: "Will read Venus, Mars, Moon, 5th/7th/8th houses, and Venus-Mars or Moon-Pluto style contacts.",
+    status: "next",
+  },
+  {
+    slug: "money-curse-reading",
+    name: "Money Curse Reading",
+    shortName: "Money",
+    badge: "chart lane",
+    summary: "A financial pattern roast for the part of your chart that keeps buying emotional support objects.",
+    science: "Will read the 2nd house, 8th house, Venus, Jupiter, Saturn, and security-vs-risk signatures.",
+    status: "next",
+  },
+  {
+    slug: "career-villain-arc",
+    name: "Career Villain Arc",
+    shortName: "Career",
+    badge: "chart lane",
+    summary: "Career weather for people whose ambition has lore, enemies, and a suspiciously cinematic delay.",
+    science: "Will read Sun, Saturn, Midheaven, 10th house, 6th house, and public-purpose signatures.",
+    status: "next",
+  },
+  {
+    slug: "compatibility-roast",
+    name: "Compatibility Roast",
+    shortName: "Compatibility",
+    badge: "two-chart crime scene",
+    summary: "A relationship synastry roast for couples, crushes, friends, and situationships with evidence.",
+    science: "Will compare two charts through Moon, Venus, Mars, Saturn contacts, overlays, and aspect tension.",
+    status: "next",
+  },
+];
+
+const FORTUNE_CARDS: FortuneCard[] = [
+  {
+    name: "The Unread Text",
+    subtitle: "Mercury in the witness protection program",
+    verdict: "Today, the message you are avoiding has built a small apartment in your nervous system.",
+    receipt: "Mercury rules messages, timing, and the little mental courtroom where you keep cross-examining punctuation.",
+    advice: "Reply, archive, or delete. Do not let a notification become your landlord.",
+  },
+  {
+    name: "The Financial Denial",
+    subtitle: "Venus holding a receipt behind her back",
+    verdict: "Your taste is expensive and your budget is pretending not to recognize you in public.",
+    receipt: "Venus speaks to pleasure and value; Saturn asks whether the pleasure has a repayment plan.",
+    advice: "Buy the thing only if tomorrow-you would not call today-you a charming criminal.",
+  },
+  {
+    name: "The Situationship Tower",
+    subtitle: "Mars, Venus, and bad structural engineering",
+    verdict: "Something vague wants to collapse into clarity. Annoying, but architecturally necessary.",
+    receipt: "Mars wants action, Venus wants sweetness, and hard aspects prefer truth with a dramatic entrance.",
+    advice: "Ask the direct question. Mystery is cute until it starts charging emotional rent.",
+  },
+  {
+    name: "The Main Character Invoice",
+    subtitle: "Sun in premium visibility mode",
+    verdict: "You want the spotlight, but the spotlight would like to see a plan.",
+    receipt: "The Sun describes expression and identity; the 10th house asks what the public version can actually deliver.",
+    advice: "Make one visible move before narrating the entire comeback documentary.",
+  },
+  {
+    name: "The Boundary Funeral",
+    subtitle: "Neptune brought fog and no paperwork",
+    verdict: "Someone else's mood may attempt to enter your bloodstream today. Deny entry politely.",
+    receipt: "Neptune blurs edges; the Moon absorbs atmosphere; the 12th house keeps receipts in a locked basement.",
+    advice: "If it is not your feeling, do not adopt it just because it looked cold outside.",
+  },
+  {
+    name: "The Saturn Clipboard",
+    subtitle: "Cosmic HR has entered the chat",
+    verdict: "A boring task is probably the hinge of the day. Deeply offensive, unfortunately true.",
+    receipt: "Saturn rules structure, delay, responsibility, and the part of maturity nobody puts on mood boards.",
+    advice: "Do the unglamorous thing first. Then be mysterious and hot afterward.",
+  },
+  {
+    name: "The Jupiter Megaphone",
+    subtitle: "Optimism with poor indoor volume",
+    verdict: "Your confidence may be correct, but it is wearing shoes indoors.",
+    receipt: "Jupiter expands whatever it touches: wisdom, appetite, faith, and occasionally nonsense.",
+    advice: "Think bigger, then edit once. The sermon only needs one altar.",
+  },
+  {
+    name: "The Moon Spill",
+    subtitle: "Emotional weather advisory",
+    verdict: "Your face may reveal information before your dignity has approved the press release.",
+    receipt: "The Moon rules need, memory, mood, and the private tide pool pretending to be logic.",
+    advice: "Name the feeling quietly before it starts writing public policy.",
+  },
+];
+
+const FAQ_ITEMS = [
+  {
+    question: "Is this real astrology or just a funny personality test?",
+    answer:
+      "The roast starts from real chart data: birth time, birthplace, planets, houses, Ascendant, Midheaven, and major aspects. The delivery is comedic; the receipts are not imaginary confetti.",
+  },
+  {
+    question: "Why do you need birth time?",
+    answer:
+      "Birth time changes the Ascendant and houses, which are huge for Big 3, career, relationships, and the exact location of the emotional crime scene. If the time is wrong, the roast may still be funny but less precise.",
+  },
+  {
+    question: "What if I do not know my birth time?",
+    answer:
+      "Use noon only as a placeholder and treat the result as soft evidence. Sun-sign and some planet placements may still work, but Ascendant and house-based receipts become shaky.",
+  },
+  {
+    question: "Is this advice?",
+    answer:
+      "No. This is entertainment and reflection, not medical, legal, financial, or mental-health advice. If a result changes your life, please blame your choices, not our decorative candle budget.",
+  },
+  {
+    question: "Why is the tone savage?",
+    answer:
+      "Because gentle horoscopes already exist and they have enough throw pillows. The goal is funny, memorable, and a little too accurate, without pretending the stars are a licensed therapist.",
+  },
+  {
+    question: "Will there be love, money, career, and compatibility readings?",
+    answer:
+      "Yes. The site is expanding into separate chart lanes, but the plan is to keep each result short, shareable, and receipt-based instead of turning into a 40-page mystical dishwasher manual.",
+  },
+  {
+    question: "Do you store my birth details?",
+    answer:
+      "Readings are sent to the API to calculate the chart. Shared links store the generated result and basic input details so the link can load. Do not enter information you consider highly sensitive.",
+  },
+  {
+    question: "Why do some pages explain astrology if the site is a meme?",
+    answer:
+      "Because a roast is funnier when it has evidence. The explanations are there to show the system is chart-based, not to trap you in a beige educational hallway.",
+  },
+];
+
 const demoReading: ReadingResponse = {
   primary_type: {
     code: "overthinker",
@@ -606,15 +789,97 @@ function getTopReceipts(result: ReadingResponse) {
   return strongestAspects.length > 0 ? strongestAspects : ["The chart returned a low-drama evidence file. Suspicious, but allowed."];
 }
 
+function getDailyCardIndex() {
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const storedKey = window.localStorage.getItem("sft-daily-card-date");
+  const storedIndex = Number(window.localStorage.getItem("sft-daily-card-index"));
+
+  if (storedKey === todayKey && Number.isInteger(storedIndex) && storedIndex >= 0 && storedIndex < FORTUNE_CARDS.length) {
+    return storedIndex;
+  }
+
+  const nextIndex = Math.floor(Math.random() * FORTUNE_CARDS.length);
+  window.localStorage.setItem("sft-daily-card-date", todayKey);
+  window.localStorage.setItem("sft-daily-card-index", String(nextIndex));
+  return nextIndex;
+}
+
+function getServiceIcon(slug: string) {
+  if (slug.includes("love") || slug.includes("compatibility")) {
+    return <Heart size={18} />;
+  }
+  if (slug.includes("money")) {
+    return <Coins size={18} />;
+  }
+  if (slug.includes("career")) {
+    return <Landmark size={18} />;
+  }
+  if (slug.includes("daily")) {
+    return <Shuffle size={18} />;
+  }
+  return <Telescope size={18} />;
+}
+
 function SiteNav() {
   return (
     <nav className="site-nav" aria-label="Site navigation">
       <a href="/"><Home size={15} /> Roast</a>
+      <a href="/readings"><Telescope size={15} /> Readings</a>
+      <a href="/daily-card"><Shuffle size={15} /> Daily Card</a>
+      <a href="/faq"><HelpCircle size={15} /> FAQ</a>
       <a href="/method"><Orbit size={15} /> Method</a>
-      <a href="/articles"><BookOpen size={15} /> Astrology 101</a>
-      <a href="/archetypes"><Sparkles size={15} /> Archetypes</a>
-      <a href="/about"><ShieldCheck size={15} /> About</a>
     </nav>
+  );
+}
+
+function ServiceGrid() {
+  return (
+    <div className="service-grid">
+      {SERVICES.map((service) => {
+        const href = service.slug === "birth-chart-roast" ? "/" : `/${service.slug}`;
+        return (
+          <a href={href} key={service.slug}>
+            <span className="service-icon">{getServiceIcon(service.slug)}</span>
+            <em>{service.badge}</em>
+            <b>{service.name}</b>
+            <p>{service.summary}</p>
+            <small>{service.science}</small>
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
+function DailyCardPull() {
+  const [cardIndex, setCardIndex] = React.useState(() => getDailyCardIndex());
+  const card = FORTUNE_CARDS[cardIndex];
+
+  function pullAgain() {
+    const nextIndex = (cardIndex + 1 + Math.floor(Math.random() * (FORTUNE_CARDS.length - 1))) % FORTUNE_CARDS.length;
+    window.localStorage.setItem("sft-daily-card-date", new Date().toISOString().slice(0, 10));
+    window.localStorage.setItem("sft-daily-card-index", String(nextIndex));
+    setCardIndex(nextIndex);
+  }
+
+  return (
+    <div className="daily-card-tool">
+      <article className="drawn-card">
+        <span>SFT</span>
+        <h2>{card.name}</h2>
+        <p>{card.subtitle}</p>
+      </article>
+      <div className="daily-card-copy">
+        <p className="eyebrow">Today&apos;s symbolic evidence</p>
+        <h3>{card.verdict}</h3>
+        <p><b>Receipt:</b> {card.receipt}</p>
+        <p><b>Court-ordered advice:</b> {card.advice}</p>
+        <button type="button" className="secondary-button" onClick={pullAgain}>
+          <Shuffle size={17} />
+          Pull another card
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -716,9 +981,13 @@ function StaticPage({ path }: { path: string }) {
   const cleanPath = path.replace(/\/$/, "") || "/";
   const article = ARTICLES.find((item) => cleanPath === `/articles/${item.slug}`);
   const archetypeEntry = Object.entries(archetypeProfiles).find(([code]) => cleanPath === `/archetypes/${code}`);
+  const serviceEntry = SERVICES.find((service) => cleanPath === `/${service.slug}`);
 
   React.useEffect(() => {
     const titles: Record<string, string> = {
+      "/readings": "Savage Readings - Savage Fortune Teller",
+      "/daily-card": "Daily Card Pull - Savage Fortune Teller",
+      "/faq": "FAQ - Savage Fortune Teller",
       "/method": "Calculation Method - Savage Fortune Teller",
       "/articles": "Astrology 101 - Savage Fortune Teller",
       "/archetypes": "Archetypes - Savage Fortune Teller",
@@ -729,10 +998,100 @@ function StaticPage({ path }: { path: string }) {
     };
     document.title = article?.title
       ? `${article.title} - Savage Fortune Teller`
+      : serviceEntry?.name
+        ? `${serviceEntry.name} - Savage Fortune Teller`
       : archetypeEntry?.[1].name
         ? `${archetypeEntry[1].name} - Savage Fortune Teller`
         : titles[cleanPath] ?? "Savage Fortune Teller";
-  }, [article?.title, archetypeEntry, cleanPath]);
+  }, [article?.title, serviceEntry?.name, archetypeEntry, cleanPath]);
+
+  if (cleanPath === "/readings") {
+    return (
+      <main className="content-shell">
+        <SiteNav />
+        <section className="content-page">
+          <p className="eyebrow">Savage reading room</p>
+          <h1>Pick your cosmic charge.</h1>
+          <p className="lede">
+            Short, shareable fortune tools with enough chart logic to avoid becoming a scented candle quiz.
+          </p>
+          <ServiceGrid />
+        </section>
+      </main>
+    );
+  }
+
+  if (cleanPath === "/daily-card") {
+    return (
+      <main className="content-shell">
+        <SiteNav />
+        <section className="content-page">
+          <p className="eyebrow">Daily Card Pull</p>
+          <h1>A one-card omen with receipts.</h1>
+          <p className="lede">
+            Tarot-ish, not tarot cosplay. Pull a card, get the day&apos;s symbolic accusation, proceed with dignity if available.
+          </p>
+          <DailyCardPull />
+        </section>
+      </main>
+    );
+  }
+
+  if (cleanPath === "/faq") {
+    return (
+      <main className="content-shell">
+        <SiteNav />
+        <section className="content-page">
+          <p className="eyebrow">FAQ</p>
+          <h1>Questions the stars made everyone ask.</h1>
+          <p className="lede">
+            Fast answers about birth times, chart logic, privacy, and why the site insists on being funny with evidence.
+          </p>
+          <div className="faq-list">
+            {FAQ_ITEMS.map((item) => (
+              <details key={item.question}>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (serviceEntry && serviceEntry.slug !== "birth-chart-roast" && serviceEntry.slug !== "daily-card") {
+    return (
+      <main className="content-shell">
+        <SiteNav />
+        <section className="content-page">
+          <p className="eyebrow">{serviceEntry.badge}</p>
+          <h1>{serviceEntry.name}</h1>
+          <p className="lede">{serviceEntry.summary}</p>
+          <div className="service-detail">
+            <article>
+              <span className="service-icon">{getServiceIcon(serviceEntry.slug)}</span>
+              <b>What it reads</b>
+              <p>{serviceEntry.science}</p>
+            </article>
+            <article>
+              <b>Format</b>
+              <p>
+                This lane is being shaped as a short chart-based reading: quick enough to share, specific enough to feel accused.
+              </p>
+            </article>
+            <article>
+              <b>Tone check</b>
+              <p>
+                No pastel affirmation soup. The result should feel like a fortune teller with a spreadsheet and a dangerous sense of timing.
+              </p>
+            </article>
+          </div>
+          <a className="text-link" href="/">Try the live Birth Chart Roast</a>
+        </section>
+      </main>
+    );
+  }
 
   if (article) {
     return (
@@ -797,6 +1156,9 @@ function StaticPage({ path }: { path: string }) {
             <p>
               The language is savage for entertainment, but the structure is intentionally transparent. If the chart says Mercury is yelling, the result should show where Mercury was found yelling.
             </p>
+            <p>
+              Birth Chart Roast is the first full chart lane. Love, money, career, and compatibility readings use the same evidence-first structure without turning every page into an academic basement.
+            </p>
           </>
         )}
 
@@ -843,6 +1205,7 @@ function StaticPage({ path }: { path: string }) {
             <p>
               The app combines calculated astrology placements with a custom archetype scoring model. It is built for entertainment and self-reflection, not medical, legal, financial, or psychological advice.
             </p>
+            <ServiceGrid />
             <div className="policy-links">
               <a href="/privacy"><ShieldCheck size={16} /> Privacy</a>
               <a href="/terms"><Scale size={16} /> Terms</a>
@@ -896,7 +1259,19 @@ function StaticPage({ path }: { path: string }) {
           </>
         )}
 
-        {!["/method", "/articles", "/archetypes", "/about", "/privacy", "/terms", "/contact"].includes(cleanPath) && (
+        {![
+          "/method",
+          "/articles",
+          "/archetypes",
+          "/about",
+          "/privacy",
+          "/terms",
+          "/contact",
+          "/readings",
+          "/daily-card",
+          "/faq",
+          ...SERVICES.map((service) => `/${service.slug}`),
+        ].includes(cleanPath) && (
           <>
             <p className="eyebrow">Lost page</p>
             <h1>This page wandered into the 12th house.</h1>
@@ -1288,6 +1663,15 @@ function App() {
         </form>
 
         {error && <div className="error">{error}</div>}
+
+        <div className="mini-service-list" aria-label="Other savage readings">
+          {SERVICES.filter((service) => service.slug !== "birth-chart-roast").slice(0, 4).map((service) => (
+            <a href={`/${service.slug}`} key={service.slug}>
+              {getServiceIcon(service.slug)}
+              <span>{service.shortName}</span>
+            </a>
+          ))}
+        </div>
       </section>
       )}
 
@@ -1414,6 +1798,9 @@ function App() {
           ))}
         </div>
         <footer className="site-footer">
+          <a href="/readings">Readings</a>
+          <a href="/daily-card">Daily Card</a>
+          <a href="/faq">FAQ</a>
           <a href="/method">Method</a>
           <a href="/articles">Astrology 101</a>
           <a href="/archetypes">Archetypes</a>
