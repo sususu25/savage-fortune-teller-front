@@ -538,12 +538,6 @@ function App() {
   const active = getActiveProfile(reading);
   const scoreMap: Record<string, { label: string; score: number }> = reading.all_archetype_scores ?? {};
   const scores = Object.entries(scoreMap).sort((a, b) => b[1].score - a[1].score);
-  const dossierItems = [
-    ["Signature curse", active.curse],
-    ["Social function", active.role],
-    ["Fatal bait", active.bait],
-    ["Prescription", active.prescription],
-  ].filter((item): item is [string, string] => Boolean(item[1]));
   const isResultMode = loading || isRevealing || hasReading;
 
   return (
@@ -682,16 +676,6 @@ function App() {
             <p className="official-name">{reading.primary_type.label}</p>
             <p className="headline">{reading.primary_type.headline}</p>
 
-            {dossierItems.length > 0 && (
-              <div className="dossier">
-                {dossierItems.map(([label, value]) => (
-                  <div key={label}>
-                    <span>{label}</span>
-                    <b>{value}</b>
-                  </div>
-                ))}
-              </div>
-            )}
 
             <div className="result-actions">
               <button
