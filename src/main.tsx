@@ -1571,6 +1571,140 @@ function App() {
   const scores = Object.entries(scoreMap).sort((a, b) => b[1].score - a[1].score);
   const isResultMode = loading || isRevealing || hasReading;
 
+  if (!isResultMode) {
+    return (
+      <main className="home-shell">
+        <section className="fortune-stage">
+          <SiteNav />
+          <div className="fortune-hero-copy">
+            <p className="eyebrow">Savage Fortune Teller</p>
+            <h1>Pick a card. Get read for filth, with receipts.</h1>
+            <p>
+              Astrology-backed roasts and fortune tools for people who want the stars to be accurate, funny, and only mildly legally concerning.
+            </p>
+          </div>
+
+          <div className="fortune-table" aria-label="Savage fortune reading cards">
+            <div className="seer-scene" aria-hidden="true">
+              <div className="hanging-lights">
+                <i />
+                <i />
+                <i />
+              </div>
+              <div className="seer-orb">
+                <span>SFT</span>
+              </div>
+            </div>
+
+            <div className="service-card-table">
+              {SERVICES.map((service, index) => {
+                const href = service.slug === "birth-chart-roast" ? "#birth-chart-roast-form" : `/${service.slug}`;
+                return (
+                  <a
+                    className={service.slug === "birth-chart-roast" ? "fortune-choice-card featured" : "fortune-choice-card"}
+                    href={href}
+                    key={service.slug}
+                    style={{ "--card-tilt": `${[-5, 2, 5, -2, 3, -4][index] ?? 0}deg` } as React.CSSProperties}
+                  >
+                    <span className="card-moon">{getServiceIcon(service.slug)}</span>
+                    <b>{service.name}</b>
+                    <em>{service.badge}</em>
+                    <small>{service.summary}</small>
+                  </a>
+                );
+              })}
+            </div>
+
+            <form id="birth-chart-roast-form" className="birth-form home-birth-form" onSubmit={requestReading}>
+              <div className="form-header wide">
+                <p className="eyebrow">Live chart lane</p>
+                <h2>Birth Chart Roast</h2>
+                <span>Enter birth details once. The chart supplies the evidence; the roast supplies the emotional damage.</span>
+              </div>
+              <label>
+                <span>
+                  <CalendarDays size={15} /> Birth date <em>required</em>
+                </span>
+                <input
+                  value={birthDate}
+                  onChange={(event) => setBirthDate(event.target.value)}
+                  type="date"
+                  aria-label="Birth date"
+                />
+              </label>
+              <label>
+                <span>
+                  <Clock3 size={15} /> Birth time <em>required</em>
+                </span>
+                <div className="time-selects" aria-label="Birth time">
+                  <select
+                    value={birthTime.split(":")[0] ?? "00"}
+                    onChange={(event) => setBirthTime((value) => updateTimePart(value, "hour", event.target.value))}
+                    aria-label="Birth hour in 24-hour format"
+                  >
+                    {hourOptions.map((hour) => (
+                      <option key={hour} value={hour}>{hour}</option>
+                    ))}
+                  </select>
+                  <span>:</span>
+                  <select
+                    value={birthTime.split(":")[1] ?? "00"}
+                    onChange={(event) => setBirthTime((value) => updateTimePart(value, "minute", event.target.value))}
+                    aria-label="Birth minute"
+                  >
+                    {minuteOptions.map((minute) => (
+                      <option key={minute} value={minute}>{minute}</option>
+                    ))}
+                  </select>
+                </div>
+              </label>
+              <label className="wide location-field">
+                <span>
+                  <MapPin size={15} /> Birthplace <em>choose from list</em>
+                </span>
+                <div className="location-input-wrap">
+                  <Search size={16} />
+                  <input
+                    value={locationQuery}
+                    onChange={(event) => {
+                      setLocationQuery(event.target.value);
+                      setSelectedLocation(null);
+                    }}
+                    placeholder="Start typing any city..."
+                    aria-label="Birthplace search"
+                  />
+                </div>
+                {suggestions.length > 0 && locationQuery !== `${selectedLocation?.city}, ${selectedLocation?.country}` && (
+                  <div className="suggestions">
+                    {suggestions.map((location) => (
+                      <button key={location.id} type="button" onClick={() => chooseLocation(location)}>
+                        <strong>{location.normalized_query ?? `${location.city}, ${location.country}`}</strong>
+                        <span>{location.timezone}{location.source ? ` - ${location.source}` : ""}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </label>
+
+              <div className="auto-coordinates wide">
+                <span>{locationLoading ? "Searching birthplace..." : "Coordinates and timezone are auto-filled from birthplace."}</span>
+                <b>{selectedLocation ? `${selectedLocation.latitude}, ${selectedLocation.longitude}` : "Select a city"}</b>
+                <b>{selectedLocation?.timezone ?? "Timezone pending"}</b>
+              </div>
+
+              <button type="submit" disabled={loading}>
+                <Sparkles size={18} />
+                {loading ? "Summoning" : "Roast me"}
+              </button>
+            </form>
+
+            {error && <div className="error home-error">{error}</div>}
+          </div>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className={isResultMode ? "shell shell-result-mode" : "shell"}>
       {!isResultMode && (

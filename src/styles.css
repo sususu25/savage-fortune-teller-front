@@ -47,6 +47,254 @@ button {
   grid-template-columns: minmax(0, 1fr);
 }
 
+.home-shell {
+  min-height: 100vh;
+  padding: 0;
+}
+
+.fortune-stage {
+  position: relative;
+  min-height: 100vh;
+  padding: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 8%, rgba(118, 73, 167, 0.3), transparent 18rem),
+    radial-gradient(circle at 50% 44%, rgba(116, 62, 172, 0.42), transparent 18rem),
+    radial-gradient(circle at 18% 62%, rgba(193, 118, 43, 0.24), transparent 16rem),
+    radial-gradient(circle at 82% 60%, rgba(222, 145, 61, 0.2), transparent 15rem),
+    linear-gradient(180deg, #050407 0%, #13091b 44%, #050407 100%);
+}
+
+.fortune-stage::before,
+.fortune-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fortune-stage::before {
+  background:
+    linear-gradient(90deg, rgba(25, 6, 31, 0.88), transparent 18%, transparent 82%, rgba(25, 6, 31, 0.88)),
+    repeating-linear-gradient(90deg, transparent 0 68px, rgba(235, 174, 80, 0.035) 68px 70px);
+}
+
+.fortune-stage::after {
+  background:
+    radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.09), transparent 2px),
+    radial-gradient(circle at 46% 28%, rgba(255, 255, 255, 0.16), transparent 1px),
+    radial-gradient(circle at 56% 22%, rgba(255, 255, 255, 0.14), transparent 1px),
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+.fortune-stage > * {
+  position: relative;
+  z-index: 1;
+}
+
+.fortune-hero-copy {
+  width: min(100%, 900px);
+  margin: 28px auto 8px;
+  text-align: center;
+}
+
+.fortune-hero-copy h1 {
+  margin: 0 auto 14px;
+  max-width: 860px;
+  color: #f7e6bd;
+  font-size: clamp(42px, 7vw, 92px);
+  line-height: 0.95;
+  text-shadow: 0 0 34px rgba(139, 76, 211, 0.32);
+}
+
+.fortune-hero-copy p {
+  max-width: 700px;
+  margin: 0 auto;
+  color: #d8c8aa;
+  font-size: clamp(16px, 2vw, 21px);
+  line-height: 1.45;
+}
+
+.fortune-table {
+  width: min(100%, 1100px);
+  margin: 28px auto 0;
+}
+
+.seer-scene {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  min-height: 210px;
+}
+
+.hanging-lights {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10%;
+}
+
+.hanging-lights i {
+  width: 2px;
+  height: 120px;
+  background: linear-gradient(#6b4b2d, transparent);
+}
+
+.hanging-lights i::after {
+  content: "";
+  display: block;
+  width: 42px;
+  aspect-ratio: 1;
+  margin: 108px 0 0 -20px;
+  border: 1px solid rgba(226, 193, 110, 0.48);
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffd38a 0 12%, rgba(196, 102, 37, 0.64) 23%, rgba(30, 8, 14, 0.82) 62%);
+  box-shadow: 0 0 32px rgba(234, 146, 65, 0.48);
+}
+
+.seer-orb {
+  display: grid;
+  place-items: center;
+  width: min(40vw, 170px);
+  aspect-ratio: 1;
+  margin-top: 72px;
+  border: 1px solid rgba(226, 193, 110, 0.45);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.95), rgba(205, 129, 255, 0.86) 18%, rgba(86, 28, 137, 0.82) 48%, rgba(16, 4, 28, 0.96) 72%),
+    #16051f;
+  box-shadow:
+    0 0 42px rgba(189, 85, 255, 0.74),
+    0 0 110px rgba(128, 59, 203, 0.48),
+    inset 0 0 38px rgba(255, 255, 255, 0.28);
+}
+
+.seer-orb span {
+  color: #fff0c8;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.service-card-table {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 2vw, 26px);
+  align-items: stretch;
+  margin-top: -12px;
+}
+
+.fortune-choice-card {
+  position: relative;
+  min-height: 250px;
+  border: 1px solid rgba(224, 191, 110, 0.62);
+  padding: 18px;
+  color: #eedeb8;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(238, 202, 116, 0.16), transparent 27%),
+    linear-gradient(150deg, rgba(75, 23, 94, 0.92), rgba(7, 6, 12, 0.96) 52%, rgba(42, 12, 56, 0.92)),
+    #09070e;
+  box-shadow:
+    0 22px 54px rgba(0, 0, 0, 0.48),
+    inset 0 0 0 9px rgba(7, 5, 12, 0.84),
+    inset 0 0 0 11px rgba(224, 191, 110, 0.2);
+  text-align: center;
+  text-decoration: none;
+  transform: rotate(var(--card-tilt));
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.fortune-choice-card:hover,
+.fortune-choice-card:focus {
+  border-color: rgba(245, 217, 139, 0.96);
+  box-shadow:
+    0 24px 72px rgba(0, 0, 0, 0.5),
+    0 0 44px rgba(185, 77, 255, 0.44),
+    inset 0 0 0 9px rgba(7, 5, 12, 0.84),
+    inset 0 0 0 11px rgba(224, 191, 110, 0.28);
+  transform: translateY(-8px) rotate(0deg);
+}
+
+.fortune-choice-card.featured {
+  border-color: rgba(236, 205, 121, 0.95);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.52),
+    0 0 58px rgba(187, 76, 255, 0.58),
+    inset 0 0 0 9px rgba(7, 5, 12, 0.84),
+    inset 0 0 0 11px rgba(224, 191, 110, 0.3);
+}
+
+.card-moon {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  aspect-ratio: 1;
+  margin: 10px auto 18px;
+  border: 1px solid rgba(224, 191, 110, 0.48);
+  border-radius: 50%;
+  color: #f3d78d;
+  background: radial-gradient(circle, rgba(238, 215, 155, 0.95) 0 33%, rgba(104, 38, 133, 0.24) 34% 100%);
+}
+
+.fortune-choice-card b {
+  display: block;
+  color: #f7e6bd;
+  font-family: "Cinzel Local", Georgia, serif;
+  font-size: clamp(20px, 2.2vw, 30px);
+  line-height: 1.05;
+}
+
+.fortune-choice-card em {
+  display: inline-block;
+  margin-top: 10px;
+  border: 1px solid rgba(158, 208, 202, 0.3);
+  padding: 5px 8px;
+  color: #9ed0ca;
+  background: rgba(31, 74, 76, 0.18);
+  font-size: 10px;
+  font-style: normal;
+  text-transform: uppercase;
+}
+
+.fortune-choice-card small {
+  display: block;
+  margin-top: 14px;
+  color: #cfc1a1;
+  font-size: 13px;
+  line-height: 1.42;
+}
+
+.home-birth-form {
+  width: min(100%, 720px);
+  margin: 34px auto 0;
+  border: 1px solid rgba(224, 191, 110, 0.36);
+  padding: 18px;
+  background: rgba(6, 8, 12, 0.78);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.44);
+}
+
+.form-header {
+  border-bottom: 1px solid rgba(201, 170, 99, 0.2);
+  padding-bottom: 12px;
+}
+
+.form-header h2 {
+  margin-bottom: 6px;
+}
+
+.form-header span {
+  display: block;
+  color: #cfc1a1;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.home-error {
+  width: min(100%, 720px);
+  margin: 14px auto 0;
+}
+
 .oracle-panel,
 .result-panel {
   min-width: 0;
@@ -1190,7 +1438,8 @@ h2 {
   .archetype-list,
   .service-grid,
   .service-detail,
-  .daily-card-tool {
+  .daily-card-tool,
+  .service-card-table {
     grid-template-columns: 1fr;
   }
 
@@ -1205,6 +1454,23 @@ h2 {
   .planet-table {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .fortune-stage {
+    padding: 16px;
+  }
+
+  .seer-scene {
+    min-height: 170px;
+  }
+
+  .seer-orb {
+    margin-top: 54px;
+  }
+
+  .fortune-choice-card {
+    min-height: 190px;
+    transform: none;
+  }
 }
 
 @media (max-width: 560px) {
@@ -1215,6 +1481,33 @@ h2 {
   .birth-form,
   .deck-strip {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .home-birth-form,
+  .home-birth-form.birth-form {
+    grid-template-columns: 1fr;
+  }
+
+  .fortune-hero-copy h1 {
+    font-size: 40px;
+  }
+
+  .fortune-hero-copy {
+    margin-top: 18px;
+  }
+
+  .service-card-table {
+    gap: 12px;
+  }
+
+  .fortune-choice-card {
+    min-height: 176px;
+    padding: 15px;
+  }
+
+  .card-moon {
+    width: 54px;
+    margin-bottom: 12px;
   }
 
   h1 {
