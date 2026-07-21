@@ -61,6 +61,22 @@ type ReadingResponse = {
   chart?: ChartResponse;
 };
 
+type LoveReadingResponse = {
+  primary_love_type: {
+    code: string;
+    label: string;
+    viral_alias: string;
+    result_badge: string;
+    headline: string;
+    score: number;
+    matched_features?: string[];
+  };
+  section_titles: Record<string, string>;
+  sections: Record<string, string>;
+  all_love_scores?: Record<string, { label: string; viral_alias: string; score: number }>;
+  chart?: ChartResponse;
+};
+
 type ChartBody = {
   sign: string;
   house?: number;
@@ -476,10 +492,10 @@ const SERVICES: ServiceCard[] = [
     slug: "love-life-roast",
     name: "Love Life Roast",
     shortName: "Love",
-    badge: "chart lane",
-    summary: "Romantic pattern recognition for people who call chemistry destiny because calm feels underproduced.",
-    science: "Will read Venus, Mars, Moon, 5th/7th/8th houses, and Venus-Mars or Moon-Pluto style contacts.",
-    status: "next",
+    badge: "live",
+    summary: "A Venus/Mars/Moon audit for people who call chemistry destiny because calm feels underproduced.",
+    science: "Reads Venus, Mars, Moon, 5th/7th/8th houses, and Venus-Mars or Moon-Pluto style contacts.",
+    status: "live",
   },
   {
     slug: "money-curse-reading",
@@ -883,6 +899,219 @@ function DailyCardPull() {
   );
 }
 
+function LoveLifeRoastPage() {
+  const [birthDate, setBirthDate] = React.useState("2000-01-01");
+  const [birthTime, setBirthTime] = React.useState("12:00");
+  const [locationQuery, setLocationQuery] = React.useState(`${defaultLocation.city}, ${defaultLocation.country}`);
+  const [selectedLocation, setSelectedLocation] = React.useState<LocationOption | null>(defaultLocation);
+  const [suggestions, setSuggestions] = React.useState<LocationOption[]>([]);
+  const [locationLoading, setLocationLoading] = React.useState(false);
+  const [loveReading, setLoveReading] = React.useState<LoveReadingResponse | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+
+  React.useEffect(() => {
+    const query = locationQuery.trim();
+    const selectedLabel = selectedLocation ? `${selectedLocation.city}, ${selectedLocation.country}` : "";
+
+    if (query.length < 2 || query === selectedLabel) {
+      setSuggestions([]);
+      setLocationLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      setLocationLoading(true);
+
+      const params = new URLSearchParams({ city: query, limit: "8" });
+
+      fetch(`${API_BASE_URL}/locations/search?${params.toString()}`, { signal: controller.signal })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Location search failed with HTTP ${response.status}.`);
+          }
+          return response.json() as Promise<LocationSearchResponse>;
+        })
+        .then((data) => {
+          const remoteLocations = data.locations ?? (data.location ? [data.location] : []);
+          const nextSuggestions = remoteLocations.map(toLocationOption);
+
+          setSuggestions(
+            nextSuggestions.length > 0
+              ? nextSuggestions
+              : fallbackLocations.filter((location) =>
+                  `${location.city}, ${location.country}`.toLowerCase().includes(query.toLowerCase()),
+                ),
+          );
+        })
+        .catch(() => {
+          setSuggestions(
+            fallbackLocations.filter((location) =>
+              `${location.city}, ${location.country}`.toLowerCase().includes(query.toLowerCase()),
+            ),
+          );
+        })
+        .finally(() => setLocationLoading(false));
+    }, 250);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [locationQuery, selectedLocation]);
+
+  function chooseLoveLocation(location: LocationOption) {
+    setSelectedLocation(location);
+    setLocationQuery(`${location.city}, ${location.country}`);
+    setSuggestions([]);
+    setError("");
+  }
+
+  async function requestLoveReading(event: React.FormEvent) {
+    event.preventDefault();
+    setError("");
+
+    if (!isValidIsoDate(birthDate)) {
+      setError("Use YYYY-MM-DD for the birth date. Venus is dramatic, not format-blind.");
+      return;
+    }
+
+    if (!isValidTime(birthTime)) {
+      setError("Use 24-hour HH:MM time. The relationship court rejects vibes o'clock.");
+      return;
+    }
+
+    if (!selectedLocation || locationQuery !== `${selectedLocation.city}, ${selectedLocation.country}`) {
+      setError("Choose a city from the suggestions so Venus knows where the crime scene happened.");
+      return;
+    }
+
+    setLoading(true);
+    setLoveReading(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/love-readings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birth_date: birthDate,
+          birth_time: birthTime,
+          birth_city: selectedLocation.city,
+          birth_country: selectedLocation.country,
+          latitude: selectedLocation.latitude,
+          longitude: selectedLocation.longitude,
+          timezone: selectedLocation.timezone,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`The love court returned HTTP ${response.status}.`);
+      }
+
+      setLoveReading((await response.json()) as LoveReadingResponse);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "The love court refused to convene.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="content-shell">
+      <SiteNav />
+      <section className="content-page service-workspace">
+        <p className="eyebrow">Love Life Roast</p>
+        <h1>Romantic pattern recognition, but make it prosecutable.</h1>
+        <p className="lede">
+          A separate Venus/Mars/Moon reading for your dating style, attachment weather, and recurring relationship incident reports.
+        </p>
+
+        <form className="birth-form service-form" onSubmit={requestLoveReading}>
+          <label>
+            <span><CalendarDays size={15} /> Birth date <em>required</em></span>
+            <input value={birthDate} onChange={(event) => setBirthDate(event.target.value)} type="date" aria-label="Birth date" />
+          </label>
+          <label>
+            <span><Clock3 size={15} /> Birth time <em>required</em></span>
+            <div className="time-selects" aria-label="Birth time">
+              <select value={birthTime.split(":")[0] ?? "00"} onChange={(event) => setBirthTime((value) => updateTimePart(value, "hour", event.target.value))}>
+                {hourOptions.map((hour) => <option key={hour} value={hour}>{hour}</option>)}
+              </select>
+              <span>:</span>
+              <select value={birthTime.split(":")[1] ?? "00"} onChange={(event) => setBirthTime((value) => updateTimePart(value, "minute", event.target.value))}>
+                {minuteOptions.map((minute) => <option key={minute} value={minute}>{minute}</option>)}
+              </select>
+            </div>
+          </label>
+          <label className="wide location-field">
+            <span><MapPin size={15} /> Birthplace <em>choose from list</em></span>
+            <div className="location-input-wrap">
+              <Search size={16} />
+              <input
+                value={locationQuery}
+                onChange={(event) => {
+                  setLocationQuery(event.target.value);
+                  setSelectedLocation(null);
+                }}
+                placeholder="Start typing any city..."
+                aria-label="Birthplace search"
+              />
+            </div>
+            {suggestions.length > 0 && locationQuery !== `${selectedLocation?.city}, ${selectedLocation?.country}` && (
+              <div className="suggestions">
+                {suggestions.map((location) => (
+                  <button key={location.id} type="button" onClick={() => chooseLoveLocation(location)}>
+                    <strong>{location.normalized_query ?? `${location.city}, ${location.country}`}</strong>
+                    <span>{location.timezone}{location.source ? ` - ${location.source}` : ""}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </label>
+
+          <div className="auto-coordinates wide">
+            <span>{locationLoading ? "Searching birthplace..." : "Venus, Mars, Moon, and houses need coordinates."}</span>
+            <b>{selectedLocation ? `${selectedLocation.latitude}, ${selectedLocation.longitude}` : "Select a city"}</b>
+            <b>{selectedLocation?.timezone ?? "Timezone pending"}</b>
+          </div>
+
+          <button type="submit" disabled={loading}>
+            <Heart size={18} />
+            {loading ? "Auditing your love life" : "Roast my love life"}
+          </button>
+        </form>
+
+        {error && <div className="error">{error}</div>}
+
+        {loveReading && (
+          <section className="service-result">
+            <p className="score">{loveReading.primary_love_type.score}% - {loveReading.primary_love_type.result_badge}</p>
+            <h2>{loveReading.primary_love_type.viral_alias}</h2>
+            <p className="official-name">{loveReading.primary_love_type.label}</p>
+            <p className="headline">{loveReading.primary_love_type.headline}</p>
+
+            <div className="big-three love-three">
+              <article><Heart size={20} /><span>Venus</span><b>{formatPlacement(loveReading.chart?.planets.venus)}</b></article>
+              <article><Sparkles size={20} /><span>Mars</span><b>{formatPlacement(loveReading.chart?.planets.mars)}</b></article>
+              <article><Moon size={20} /><span>Moon</span><b>{formatPlacement(loveReading.chart?.planets.moon)}</b></article>
+            </div>
+
+            <div className="section-grid">
+              {Object.entries(loveReading.section_titles).map(([key, title]) => (
+                <article className="reading-section" key={key}>
+                  <h3>{title}</h3>
+                  <p>{loveReading.sections[key]}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+      </section>
+    </main>
+  );
+}
+
 function ChartEvidence({ result }: { result: ReadingResponse }) {
   const chart = result.chart;
   const receipts = getTopReceipts(result);
@@ -1035,6 +1264,10 @@ function StaticPage({ path }: { path: string }) {
         </section>
       </main>
     );
+  }
+
+  if (cleanPath === "/love-life-roast") {
+    return <LoveLifeRoastPage />;
   }
 
   if (cleanPath === "/faq") {
