@@ -77,6 +77,45 @@ type LoveReadingResponse = {
   chart?: ChartResponse;
 };
 
+type ThemedPrimaryResult = {
+  code: string;
+  label: string;
+  viral_alias: string;
+  result_badge: string;
+  headline: string;
+  score: number;
+  matched_features?: string[];
+};
+
+type ThemedReadingResponse = {
+  primary_money_type?: ThemedPrimaryResult;
+  primary_career_type?: ThemedPrimaryResult;
+  primary_energy_type?: ThemedPrimaryResult;
+  section_titles: Record<string, string>;
+  sections: Record<string, string>;
+  all_money_scores?: Record<string, ThemedPrimaryResult>;
+  all_career_scores?: Record<string, ThemedPrimaryResult>;
+  all_energy_scores?: Record<string, ThemedPrimaryResult>;
+  chart?: ChartResponse;
+};
+
+type ThemedPrimaryKey = "primary_money_type" | "primary_career_type" | "primary_energy_type";
+
+type ThemedReadingPageConfig = {
+  slug: string;
+  endpoint: string;
+  primaryKey: ThemedPrimaryKey;
+  eyebrow: string;
+  title: string;
+  lede: string;
+  coordinateCopy: string;
+  submitLabel: string;
+  loadingLabel: string;
+  errorPrefix: string;
+  fallbackError: string;
+  focusPoints: Array<{ key: string; label: string; icon: "heart" | "coins" | "landmark" | "moon" | "sparkles" | "sun" }>;
+};
+
 type ChartBody = {
   sign: string;
   house?: number;
@@ -501,19 +540,28 @@ const SERVICES: ServiceCard[] = [
     slug: "money-curse-reading",
     name: "Money Curse Reading",
     shortName: "Money",
-    badge: "chart lane",
+    badge: "live",
     summary: "A financial pattern roast for the part of your chart that keeps buying emotional support objects.",
-    science: "Will read the 2nd house, 8th house, Venus, Jupiter, Saturn, and security-vs-risk signatures.",
-    status: "next",
+    science: "Reads the 2nd house, 8th house, Venus, Jupiter, Saturn, and security-vs-risk signatures.",
+    status: "live",
   },
   {
     slug: "career-villain-arc",
     name: "Career Villain Arc",
     shortName: "Career",
-    badge: "chart lane",
+    badge: "live",
     summary: "Career weather for people whose ambition has lore, enemies, and a suspiciously cinematic delay.",
-    science: "Will read Sun, Saturn, Midheaven, 10th house, 6th house, and public-purpose signatures.",
-    status: "next",
+    science: "Reads Sun, Saturn, Midheaven, 10th house, 6th house, and public-purpose signatures.",
+    status: "live",
+  },
+  {
+    slug: "energy-damage-forecast",
+    name: "Energy Damage Forecast",
+    shortName: "Energy",
+    badge: "live",
+    summary: "A non-medical burnout-pattern roast for the part of your chart that keeps ignoring its own battery warning.",
+    science: "Reads Moon, Mars, Saturn, 6th/12th houses, element balance, and pressure-vs-recovery signatures.",
+    status: "live",
   },
   {
     slug: "compatibility-roast",
@@ -830,6 +878,9 @@ function getServiceIcon(slug: string) {
   if (slug.includes("career")) {
     return <Landmark size={18} />;
   }
+  if (slug.includes("energy")) {
+    return <Sparkles size={18} />;
+  }
   if (slug.includes("daily")) {
     return <Shuffle size={18} />;
   }
@@ -896,6 +947,288 @@ function DailyCardPull() {
         </button>
       </div>
     </div>
+  );
+}
+
+const THEMED_READING_CONFIGS: Record<string, ThemedReadingPageConfig> = {
+  "money-curse-reading": {
+    slug: "money-curse-reading",
+    endpoint: "/money-readings",
+    primaryKey: "primary_money_type",
+    eyebrow: "Money Curse Reading",
+    title: "Your financial pattern, dragged with chart receipts.",
+    lede: "A separate 2nd/8th house, Venus, Jupiter, and Saturn reading for spending habits, scarcity scripts, and emotional checkout decisions.",
+    coordinateCopy: "Venus, Jupiter, Saturn, and money houses need coordinates.",
+    submitLabel: "Audit my money curse",
+    loadingLabel: "Auditing the bank account aura",
+    errorPrefix: "The money court returned",
+    fallbackError: "The money court refused to open the books.",
+    focusPoints: [
+      { key: "venus", label: "Venus", icon: "heart" },
+      { key: "jupiter", label: "Jupiter", icon: "sparkles" },
+      { key: "saturn", label: "Saturn", icon: "coins" },
+    ],
+  },
+  "career-villain-arc": {
+    slug: "career-villain-arc",
+    endpoint: "/career-readings",
+    primaryKey: "primary_career_type",
+    eyebrow: "Career Villain Arc",
+    title: "Your ambition has a plot. The chart has notes.",
+    lede: "A separate Sun/Saturn/Midheaven reading for public image, work pressure, reputation, and the part of you that wants a dramatic chair turn.",
+    coordinateCopy: "Sun, Saturn, Midheaven, and work houses need coordinates.",
+    submitLabel: "Roast my career arc",
+    loadingLabel: "Reviewing your public file",
+    errorPrefix: "The career board returned",
+    fallbackError: "The career board tabled your case.",
+    focusPoints: [
+      { key: "sun", label: "Sun", icon: "sun" },
+      { key: "saturn", label: "Saturn", icon: "landmark" },
+      { key: "mc", label: "Midheaven", icon: "sparkles" },
+    ],
+  },
+  "energy-damage-forecast": {
+    slug: "energy-damage-forecast",
+    endpoint: "/energy-readings",
+    primaryKey: "primary_energy_type",
+    eyebrow: "Energy Damage Forecast",
+    title: "Burnout weather, not medical advice.",
+    lede: "A separate Moon/Mars/Saturn reading for stress patterns, recovery style, pressure habits, and the battery warning you keep negotiating with.",
+    coordinateCopy: "Moon, Mars, Saturn, and pressure houses need coordinates.",
+    submitLabel: "Forecast my damage",
+    loadingLabel: "Checking the burnout weather",
+    errorPrefix: "The energy desk returned",
+    fallbackError: "The energy desk went offline.",
+    focusPoints: [
+      { key: "moon", label: "Moon", icon: "moon" },
+      { key: "mars", label: "Mars", icon: "sparkles" },
+      { key: "saturn", label: "Saturn", icon: "coins" },
+    ],
+  },
+};
+
+function renderThemeIcon(icon: ThemedReadingPageConfig["focusPoints"][number]["icon"], size = 20) {
+  if (icon === "heart") return <Heart size={size} />;
+  if (icon === "coins") return <Coins size={size} />;
+  if (icon === "landmark") return <Landmark size={size} />;
+  if (icon === "moon") return <Moon size={size} />;
+  if (icon === "sun") return <Sun size={size} />;
+  return <Sparkles size={size} />;
+}
+
+function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
+  const [birthDate, setBirthDate] = React.useState("2000-01-01");
+  const [birthTime, setBirthTime] = React.useState("12:00");
+  const [locationQuery, setLocationQuery] = React.useState(`${defaultLocation.city}, ${defaultLocation.country}`);
+  const [selectedLocation, setSelectedLocation] = React.useState<LocationOption | null>(defaultLocation);
+  const [suggestions, setSuggestions] = React.useState<LocationOption[]>([]);
+  const [locationLoading, setLocationLoading] = React.useState(false);
+  const [themeReading, setThemeReading] = React.useState<ThemedReadingResponse | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+
+  React.useEffect(() => {
+    const query = locationQuery.trim();
+    const selectedLabel = selectedLocation ? `${selectedLocation.city}, ${selectedLocation.country}` : "";
+
+    if (query.length < 2 || query === selectedLabel) {
+      setSuggestions([]);
+      setLocationLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      setLocationLoading(true);
+      const params = new URLSearchParams({ city: query, limit: "8" });
+
+      fetch(`${API_BASE_URL}/locations/search?${params.toString()}`, { signal: controller.signal })
+        .then((response) => {
+          if (!response.ok) throw new Error(`Location search failed with HTTP ${response.status}.`);
+          return response.json() as Promise<LocationSearchResponse>;
+        })
+        .then((data) => {
+          const remoteLocations = data.locations ?? (data.location ? [data.location] : []);
+          const nextSuggestions = remoteLocations.map(toLocationOption);
+          setSuggestions(
+            nextSuggestions.length > 0
+              ? nextSuggestions
+              : fallbackLocations.filter((location) =>
+                  `${location.city}, ${location.country}`.toLowerCase().includes(query.toLowerCase()),
+                ),
+          );
+        })
+        .catch(() => {
+          setSuggestions(
+            fallbackLocations.filter((location) =>
+              `${location.city}, ${location.country}`.toLowerCase().includes(query.toLowerCase()),
+            ),
+          );
+        })
+        .finally(() => setLocationLoading(false));
+    }, 250);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [locationQuery, selectedLocation]);
+
+  function chooseThemeLocation(location: LocationOption) {
+    setSelectedLocation(location);
+    setLocationQuery(`${location.city}, ${location.country}`);
+    setSuggestions([]);
+    setError("");
+  }
+
+  async function requestThemeReading(event: React.FormEvent) {
+    event.preventDefault();
+    setError("");
+
+    if (!isValidIsoDate(birthDate)) {
+      setError("Use YYYY-MM-DD for the birth date. The stars tolerate drama, not broken formats.");
+      return;
+    }
+
+    if (!isValidTime(birthTime)) {
+      setError("Use 24-hour HH:MM time. Vibes o'clock is not a timezone.");
+      return;
+    }
+
+    if (!selectedLocation || locationQuery !== `${selectedLocation.city}, ${selectedLocation.country}`) {
+      setError("Choose a city from the suggestions so the chart knows where the incident happened.");
+      return;
+    }
+
+    setLoading(true);
+    setThemeReading(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}${config.endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birth_date: birthDate,
+          birth_time: birthTime,
+          birth_city: selectedLocation.city,
+          birth_country: selectedLocation.country,
+          latitude: selectedLocation.latitude,
+          longitude: selectedLocation.longitude,
+          timezone: selectedLocation.timezone,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`${config.errorPrefix} HTTP ${response.status}.`);
+      }
+
+      setThemeReading((await response.json()) as ThemedReadingResponse);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : config.fallbackError);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const primary = themeReading?.[config.primaryKey];
+
+  return (
+    <main className="content-shell">
+      <SiteNav />
+      <section className="content-page service-workspace">
+        <p className="eyebrow">{config.eyebrow}</p>
+        <h1>{config.title}</h1>
+        <p className="lede">{config.lede}</p>
+
+        <form className="birth-form service-form" onSubmit={requestThemeReading}>
+          <label>
+            <span><CalendarDays size={15} /> Birth date <em>required</em></span>
+            <input value={birthDate} onChange={(event) => setBirthDate(event.target.value)} type="date" aria-label="Birth date" />
+          </label>
+          <label>
+            <span><Clock3 size={15} /> Birth time <em>required</em></span>
+            <div className="time-selects" aria-label="Birth time">
+              <select value={birthTime.split(":")[0] ?? "00"} onChange={(event) => setBirthTime((value) => updateTimePart(value, "hour", event.target.value))}>
+                {hourOptions.map((hour) => <option key={hour} value={hour}>{hour}</option>)}
+              </select>
+              <span>:</span>
+              <select value={birthTime.split(":")[1] ?? "00"} onChange={(event) => setBirthTime((value) => updateTimePart(value, "minute", event.target.value))}>
+                {minuteOptions.map((minute) => <option key={minute} value={minute}>{minute}</option>)}
+              </select>
+            </div>
+          </label>
+          <label className="wide location-field">
+            <span><MapPin size={15} /> Birthplace <em>choose from list</em></span>
+            <div className="location-input-wrap">
+              <Search size={16} />
+              <input
+                value={locationQuery}
+                onChange={(event) => {
+                  setLocationQuery(event.target.value);
+                  setSelectedLocation(null);
+                }}
+                placeholder="Start typing any city..."
+                aria-label="Birthplace search"
+              />
+            </div>
+            {suggestions.length > 0 && locationQuery !== `${selectedLocation?.city}, ${selectedLocation?.country}` && (
+              <div className="suggestions">
+                {suggestions.map((location) => (
+                  <button key={location.id} type="button" onClick={() => chooseThemeLocation(location)}>
+                    <strong>{location.normalized_query ?? `${location.city}, ${location.country}`}</strong>
+                    <span>{location.timezone}{location.source ? ` - ${location.source}` : ""}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </label>
+
+          <div className="auto-coordinates wide">
+            <span>{locationLoading ? "Searching birthplace..." : config.coordinateCopy}</span>
+            <b>{selectedLocation ? `${selectedLocation.latitude}, ${selectedLocation.longitude}` : "Select a city"}</b>
+            <b>{selectedLocation?.timezone ?? "Timezone pending"}</b>
+          </div>
+
+          <button type="submit" disabled={loading}>
+            {getServiceIcon(config.slug)}
+            {loading ? config.loadingLabel : config.submitLabel}
+          </button>
+        </form>
+
+        {error && <div className="error">{error}</div>}
+
+        {themeReading && primary && (
+          <section className="service-result">
+            <p className="score">{primary.score}% - {primary.result_badge}</p>
+            <h2>{primary.viral_alias}</h2>
+            <p className="official-name">{primary.label}</p>
+            <p className="headline">{primary.headline}</p>
+
+            <div className="big-three love-three">
+              {config.focusPoints.map((point) => {
+                const body = themeReading.chart?.planets[point.key] ?? themeReading.chart?.angles[point.key];
+                return (
+                  <article key={point.key}>
+                    {renderThemeIcon(point.icon)}
+                    <span>{point.label}</span>
+                    <b>{formatPlacement(body)}</b>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="section-grid">
+              {Object.entries(themeReading.section_titles).map(([key, title]) => (
+                <article className="reading-section" key={key}>
+                  <h3>{title}</h3>
+                  <p>{themeReading.sections[key]}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+      </section>
+    </main>
   );
 }
 
@@ -1268,6 +1601,10 @@ function StaticPage({ path }: { path: string }) {
 
   if (cleanPath === "/love-life-roast") {
     return <LoveLifeRoastPage />;
+  }
+
+  if (THEMED_READING_CONFIGS[serviceEntry?.slug ?? ""]) {
+    return <ThemedReadingPage config={THEMED_READING_CONFIGS[serviceEntry?.slug ?? ""]} />;
   }
 
   if (cleanPath === "/faq") {
