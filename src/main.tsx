@@ -881,6 +881,68 @@ function ContactPoint() {
   );
 }
 
+function BirthTimeField({
+  id,
+  birthTime,
+  setBirthTime,
+  unknownBirthTime,
+  setUnknownBirthTime,
+}: {
+  id: string;
+  birthTime: string;
+  setBirthTime: React.Dispatch<React.SetStateAction<string>>;
+  unknownBirthTime: boolean;
+  setUnknownBirthTime: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  function toggleUnknownTime(event: React.ChangeEvent<HTMLInputElement>) {
+    const checked = event.target.checked;
+    setUnknownBirthTime(checked);
+    if (checked) {
+      setBirthTime("12:00");
+    }
+  }
+
+  return (
+    <div className="time-field">
+      <label>
+        <span>
+          <Clock3 size={15} /> Birth time <em>{unknownBirthTime ? "noon fallback" : "required"}</em>
+        </span>
+        <div className="time-selects" aria-label="Birth time">
+          <select
+            value={birthTime.split(":")[0] ?? "00"}
+            onChange={(event) => setBirthTime((value) => updateTimePart(value, "hour", event.target.value))}
+            aria-label="Birth hour in 24-hour format"
+            disabled={unknownBirthTime}
+          >
+            {hourOptions.map((hour) => (
+              <option key={hour} value={hour}>{hour}</option>
+            ))}
+          </select>
+          <span>:</span>
+          <select
+            value={birthTime.split(":")[1] ?? "00"}
+            onChange={(event) => setBirthTime((value) => updateTimePart(value, "minute", event.target.value))}
+            aria-label="Birth minute"
+            disabled={unknownBirthTime}
+          >
+            {minuteOptions.map((minute) => (
+              <option key={minute} value={minute}>{minute}</option>
+            ))}
+          </select>
+        </div>
+      </label>
+      <label className="time-unknown-row" htmlFor={id}>
+        <input id={id} type="checkbox" checked={unknownBirthTime} onChange={toggleUnknownTime} />
+        <span>I don&apos;t know my birth time</span>
+      </label>
+      {unknownBirthTime && (
+        <p className="time-unknown-note">Using 12:00 noon. Ascendant and house receipts may be approximate.</p>
+      )}
+    </div>
+  );
+}
+
 function ServiceGrid() {
   return (
     <div className="service-grid">
@@ -1076,6 +1138,7 @@ function renderThemeIcon(icon: ThemedReadingPageConfig["focusPoints"][number]["i
 function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
   const [birthDate, setBirthDate] = React.useState("2000-01-01");
   const [birthTime, setBirthTime] = React.useState("12:00");
+  const [unknownBirthTime, setUnknownBirthTime] = React.useState(false);
   const [locationQuery, setLocationQuery] = React.useState(`${defaultLocation.city}, ${defaultLocation.country}`);
   const [selectedLocation, setSelectedLocation] = React.useState<LocationOption | null>(defaultLocation);
   const [suggestions, setSuggestions] = React.useState<LocationOption[]>([]);
@@ -1147,7 +1210,9 @@ function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
       return;
     }
 
-    if (!isValidTime(birthTime)) {
+    const effectiveBirthTime = unknownBirthTime ? "12:00" : birthTime;
+
+    if (!isValidTime(effectiveBirthTime)) {
       setError("Use 24-hour HH:MM time. Vibes o'clock is not a timezone.");
       return;
     }
@@ -1167,7 +1232,7 @@ function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           birth_date: birthDate,
-          birth_time: birthTime,
+          birth_time: effectiveBirthTime,
           birth_city: selectedLocation.city,
           birth_country: selectedLocation.country,
           latitude: selectedLocation.latitude,
@@ -1206,18 +1271,13 @@ function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
             <span><CalendarDays size={15} /> Birth date <em>required</em></span>
             <input value={birthDate} onChange={(event) => setBirthDate(event.target.value)} type="date" aria-label="Birth date" />
           </label>
-          <label>
-            <span><Clock3 size={15} /> Birth time <em>required</em></span>
-            <div className="time-selects" aria-label="Birth time">
-              <select value={birthTime.split(":")[0] ?? "00"} onChange={(event) => setBirthTime((value) => updateTimePart(value, "hour", event.target.value))}>
-                {hourOptions.map((hour) => <option key={hour} value={hour}>{hour}</option>)}
-              </select>
-              <span>:</span>
-              <select value={birthTime.split(":")[1] ?? "00"} onChange={(event) => setBirthTime((value) => updateTimePart(value, "minute", event.target.value))}>
-                {minuteOptions.map((minute) => <option key={minute} value={minute}>{minute}</option>)}
-              </select>
-            </div>
-          </label>
+          <BirthTimeField
+            id={`${config.slug}-unknown-birth-time`}
+            birthTime={birthTime}
+            setBirthTime={setBirthTime}
+            unknownBirthTime={unknownBirthTime}
+            setUnknownBirthTime={setUnknownBirthTime}
+          />
           <label className="wide location-field">
             <span><MapPin size={15} /> Birthplace <em>choose from list</em></span>
             <div className="location-input-wrap">
@@ -1305,6 +1365,7 @@ function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
 function LoveLifeRoastPage() {
   const [birthDate, setBirthDate] = React.useState("2000-01-01");
   const [birthTime, setBirthTime] = React.useState("12:00");
+  const [unknownBirthTime, setUnknownBirthTime] = React.useState(false);
   const [locationQuery, setLocationQuery] = React.useState(`${defaultLocation.city}, ${defaultLocation.country}`);
   const [selectedLocation, setSelectedLocation] = React.useState<LocationOption | null>(defaultLocation);
   const [suggestions, setSuggestions] = React.useState<LocationOption[]>([]);
@@ -1380,7 +1441,9 @@ function LoveLifeRoastPage() {
       return;
     }
 
-    if (!isValidTime(birthTime)) {
+    const effectiveBirthTime = unknownBirthTime ? "12:00" : birthTime;
+
+    if (!isValidTime(effectiveBirthTime)) {
       setError("Use 24-hour HH:MM time. The relationship court rejects vibes o'clock.");
       return;
     }
@@ -1400,7 +1463,7 @@ function LoveLifeRoastPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           birth_date: birthDate,
-          birth_time: birthTime,
+          birth_time: effectiveBirthTime,
           birth_city: selectedLocation.city,
           birth_country: selectedLocation.country,
           latitude: selectedLocation.latitude,
@@ -1439,18 +1502,13 @@ function LoveLifeRoastPage() {
             <span><CalendarDays size={15} /> Birth date <em>required</em></span>
             <input value={birthDate} onChange={(event) => setBirthDate(event.target.value)} type="date" aria-label="Birth date" />
           </label>
-          <label>
-            <span><Clock3 size={15} /> Birth time <em>required</em></span>
-            <div className="time-selects" aria-label="Birth time">
-              <select value={birthTime.split(":")[0] ?? "00"} onChange={(event) => setBirthTime((value) => updateTimePart(value, "hour", event.target.value))}>
-                {hourOptions.map((hour) => <option key={hour} value={hour}>{hour}</option>)}
-              </select>
-              <span>:</span>
-              <select value={birthTime.split(":")[1] ?? "00"} onChange={(event) => setBirthTime((value) => updateTimePart(value, "minute", event.target.value))}>
-                {minuteOptions.map((minute) => <option key={minute} value={minute}>{minute}</option>)}
-              </select>
-            </div>
-          </label>
+          <BirthTimeField
+            id="love-unknown-birth-time"
+            birthTime={birthTime}
+            setBirthTime={setBirthTime}
+            unknownBirthTime={unknownBirthTime}
+            setUnknownBirthTime={setUnknownBirthTime}
+          />
           <label className="wide location-field">
             <span><MapPin size={15} /> Birthplace <em>choose from list</em></span>
             <div className="location-input-wrap">
@@ -1954,6 +2012,7 @@ function App() {
 
   const [birthDate, setBirthDate] = React.useState("2000-01-01");
   const [birthTime, setBirthTime] = React.useState("12:00");
+  const [unknownBirthTime, setUnknownBirthTime] = React.useState(false);
   const [locationQuery, setLocationQuery] = React.useState(`${defaultLocation.city}, ${defaultLocation.country}`);
   const [selectedLocation, setSelectedLocation] = React.useState<LocationOption | null>(defaultLocation);
   const [suggestions, setSuggestions] = React.useState<LocationOption[]>([]);
@@ -2099,7 +2158,9 @@ function App() {
       return;
     }
 
-    if (!isValidTime(birthTime)) {
+    const effectiveBirthTime = unknownBirthTime ? "12:00" : birthTime;
+
+    if (!isValidTime(effectiveBirthTime)) {
       setError("Use 24-hour HH:MM time. The oracle refuses to parse vibes o'clock.");
       return;
     }
@@ -2122,7 +2183,7 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           birth_date: birthDate,
-          birth_time: birthTime,
+          birth_time: effectiveBirthTime,
           birth_city: selectedLocation.city,
           birth_country: selectedLocation.country,
           latitude: selectedLocation.latitude,
@@ -2173,7 +2234,7 @@ function App() {
           result_payload: reading,
           input: {
             birth_date: birthDate,
-            birth_time: birthTime,
+            birth_time: unknownBirthTime ? "12:00" : birthTime,
             birth_city: selectedLocation?.city ?? "",
             birth_country: selectedLocation?.country ?? "",
           },
@@ -2282,32 +2343,13 @@ function App() {
                   aria-label="Birth date"
                 />
               </label>
-              <label>
-                <span>
-                  <Clock3 size={15} /> Birth time <em>required</em>
-                </span>
-                <div className="time-selects" aria-label="Birth time">
-                  <select
-                    value={birthTime.split(":")[0] ?? "00"}
-                    onChange={(event) => setBirthTime((value) => updateTimePart(value, "hour", event.target.value))}
-                    aria-label="Birth hour in 24-hour format"
-                  >
-                    {hourOptions.map((hour) => (
-                      <option key={hour} value={hour}>{hour}</option>
-                    ))}
-                  </select>
-                  <span>:</span>
-                  <select
-                    value={birthTime.split(":")[1] ?? "00"}
-                    onChange={(event) => setBirthTime((value) => updateTimePart(value, "minute", event.target.value))}
-                    aria-label="Birth minute"
-                  >
-                    {minuteOptions.map((minute) => (
-                      <option key={minute} value={minute}>{minute}</option>
-                    ))}
-                  </select>
-                </div>
-              </label>
+              <BirthTimeField
+                id="home-unknown-birth-time"
+                birthTime={birthTime}
+                setBirthTime={setBirthTime}
+                unknownBirthTime={unknownBirthTime}
+                setUnknownBirthTime={setUnknownBirthTime}
+              />
               <label className="wide location-field">
                 <span>
                   <MapPin size={15} /> Birthplace <em>choose from list</em>
@@ -2381,32 +2423,13 @@ function App() {
               aria-label="Birth date"
             />
           </label>
-          <label>
-            <span>
-              <Clock3 size={15} /> Birth time <em>required</em>
-            </span>
-            <div className="time-selects" aria-label="Birth time">
-              <select
-                value={birthTime.split(":")[0] ?? "00"}
-                onChange={(event) => setBirthTime((value) => updateTimePart(value, "hour", event.target.value))}
-                aria-label="Birth hour in 24-hour format"
-              >
-                {hourOptions.map((hour) => (
-                  <option key={hour} value={hour}>{hour}</option>
-                ))}
-              </select>
-              <span>:</span>
-              <select
-                value={birthTime.split(":")[1] ?? "00"}
-                onChange={(event) => setBirthTime((value) => updateTimePart(value, "minute", event.target.value))}
-                aria-label="Birth minute"
-              >
-                {minuteOptions.map((minute) => (
-                  <option key={minute} value={minute}>{minute}</option>
-                ))}
-              </select>
-            </div>
-          </label>
+          <BirthTimeField
+            id="side-unknown-birth-time"
+            birthTime={birthTime}
+            setBirthTime={setBirthTime}
+            unknownBirthTime={unknownBirthTime}
+            setUnknownBirthTime={setUnknownBirthTime}
+          />
           <label className="wide location-field">
             <span>
               <MapPin size={15} /> Birthplace <em>choose from list</em>

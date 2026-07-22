@@ -443,6 +443,56 @@ select:focus {
   line-height: 1;
 }
 
+.time-field {
+  display: grid;
+  gap: 8px;
+  color: #cdbf9c;
+  font-size: 13px;
+}
+
+.time-field > label:first-child {
+  display: grid;
+  gap: 7px;
+}
+
+.time-selects select:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.time-unknown-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  color: #d9c99e;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.time-unknown-row input {
+  min-width: 14px;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  padding: 0;
+  accent-color: #d8b867;
+}
+
+.time-unknown-row span {
+  display: inline;
+  color: rgba(244, 229, 189, 0.78);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.time-unknown-note {
+  margin: -2px 0 0;
+  color: rgba(158, 208, 202, 0.76);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
 .location-field {
   position: relative;
 }
@@ -1150,7 +1200,7 @@ h2 {
   justify-content: center;
   gap: 8px;
   width: min(100%, 980px);
-  margin: 18px auto 0;
+  margin: clamp(44px, 8vh, 96px) auto 0;
   color: rgba(207, 193, 161, 0.72);
   font-size: 11px;
   line-height: 1.35;
@@ -1172,7 +1222,12 @@ h2 {
 
 .fortune-stage .contact-point,
 .daily-page-shell .contact-point {
+  margin-top: clamp(72px, 13vh, 140px);
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.82);
+}
+
+.content-shell .contact-point {
+  margin-top: clamp(36px, 7vh, 90px);
 }
 
 .content-shell {
