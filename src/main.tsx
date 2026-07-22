@@ -2698,7 +2698,7 @@ function App() {
           <SiteNav />
           <div className="fortune-hero-copy">
             <p className="eyebrow">Savage Fortune Teller</p>
-            <h1>Pick a card. Get read for filth, with receipts.</h1>
+            <h1>Pick a card. Get roasted, with receipts.</h1>
             <p>
               Astrology-backed roasts and fortune tools for people who want the stars to be accurate, funny, and only mildly legally concerning.
             </p>
