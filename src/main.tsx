@@ -203,6 +203,7 @@ type FortuneCard = {
   verdict: string;
   receipt: string;
   advice: string;
+  spriteIndex: number;
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000/api/v1";
@@ -563,15 +564,6 @@ const SERVICES: ServiceCard[] = [
     science: "Reads Moon, Mars, Saturn, 6th/12th houses, element balance, and pressure-vs-recovery signatures.",
     status: "live",
   },
-  {
-    slug: "compatibility-roast",
-    name: "Compatibility Roast",
-    shortName: "Compatibility",
-    badge: "two-chart crime scene",
-    summary: "A relationship synastry roast for couples, crushes, friends, and situationships with evidence.",
-    science: "Will compare two charts through Moon, Venus, Mars, Saturn contacts, overlays, and aspect tension.",
-    status: "next",
-  },
 ];
 
 const FORTUNE_CARDS: FortuneCard[] = [
@@ -581,6 +573,7 @@ const FORTUNE_CARDS: FortuneCard[] = [
     verdict: "Today, the message you are avoiding has built a small apartment in your nervous system.",
     receipt: "Mercury rules messages, timing, and the little mental courtroom where you keep cross-examining punctuation.",
     advice: "Reply, archive, or delete. Do not let a notification become your landlord.",
+    spriteIndex: 0,
   },
   {
     name: "The Financial Denial",
@@ -588,6 +581,7 @@ const FORTUNE_CARDS: FortuneCard[] = [
     verdict: "Your taste is expensive and your budget is pretending not to recognize you in public.",
     receipt: "Venus speaks to pleasure and value; Saturn asks whether the pleasure has a repayment plan.",
     advice: "Buy the thing only if tomorrow-you would not call today-you a charming criminal.",
+    spriteIndex: 3,
   },
   {
     name: "The Situationship Tower",
@@ -595,6 +589,7 @@ const FORTUNE_CARDS: FortuneCard[] = [
     verdict: "Something vague wants to collapse into clarity. Annoying, but architecturally necessary.",
     receipt: "Mars wants action, Venus wants sweetness, and hard aspects prefer truth with a dramatic entrance.",
     advice: "Ask the direct question. Mystery is cute until it starts charging emotional rent.",
+    spriteIndex: 1,
   },
   {
     name: "The Main Character Invoice",
@@ -602,6 +597,7 @@ const FORTUNE_CARDS: FortuneCard[] = [
     verdict: "You want the spotlight, but the spotlight would like to see a plan.",
     receipt: "The Sun describes expression and identity; the 10th house asks what the public version can actually deliver.",
     advice: "Make one visible move before narrating the entire comeback documentary.",
+    spriteIndex: 4,
   },
   {
     name: "The Boundary Funeral",
@@ -609,6 +605,7 @@ const FORTUNE_CARDS: FortuneCard[] = [
     verdict: "Someone else's mood may attempt to enter your bloodstream today. Deny entry politely.",
     receipt: "Neptune blurs edges; the Moon absorbs atmosphere; the 12th house keeps receipts in a locked basement.",
     advice: "If it is not your feeling, do not adopt it just because it looked cold outside.",
+    spriteIndex: 5,
   },
   {
     name: "The Saturn Clipboard",
@@ -616,20 +613,7 @@ const FORTUNE_CARDS: FortuneCard[] = [
     verdict: "A boring task is probably the hinge of the day. Deeply offensive, unfortunately true.",
     receipt: "Saturn rules structure, delay, responsibility, and the part of maturity nobody puts on mood boards.",
     advice: "Do the unglamorous thing first. Then be mysterious and hot afterward.",
-  },
-  {
-    name: "The Jupiter Megaphone",
-    subtitle: "Optimism with poor indoor volume",
-    verdict: "Your confidence may be correct, but it is wearing shoes indoors.",
-    receipt: "Jupiter expands whatever it touches: wisdom, appetite, faith, and occasionally nonsense.",
-    advice: "Think bigger, then edit once. The sermon only needs one altar.",
-  },
-  {
-    name: "The Moon Spill",
-    subtitle: "Emotional weather advisory",
-    verdict: "Your face may reveal information before your dignity has approved the press release.",
-    receipt: "The Moon rules need, memory, mood, and the private tide pool pretending to be logic.",
-    advice: "Name the feeling quietly before it starts writing public policy.",
+    spriteIndex: 2,
   },
 ];
 
@@ -660,7 +644,7 @@ const FAQ_ITEMS = [
       "Because gentle horoscopes already exist and they have enough throw pillows. The goal is funny, memorable, and a little too accurate, without pretending the stars are a licensed therapist.",
   },
   {
-    question: "Will there be love, money, career, and compatibility readings?",
+    question: "Will there be love, money, career, and energy readings?",
     answer:
       "Yes. The site is expanding into separate chart lanes, but the plan is to keep each result short, shareable, and receipt-based instead of turning into a 40-page mystical dishwasher manual.",
   },
@@ -853,23 +837,8 @@ function getTopReceipts(result: ReadingResponse) {
   return strongestAspects.length > 0 ? strongestAspects : ["The chart returned a low-drama evidence file. Suspicious, but allowed."];
 }
 
-function getDailyCardIndex() {
-  const todayKey = new Date().toISOString().slice(0, 10);
-  const storedKey = window.localStorage.getItem("sft-daily-card-date");
-  const storedIndex = Number(window.localStorage.getItem("sft-daily-card-index"));
-
-  if (storedKey === todayKey && Number.isInteger(storedIndex) && storedIndex >= 0 && storedIndex < FORTUNE_CARDS.length) {
-    return storedIndex;
-  }
-
-  const nextIndex = Math.floor(Math.random() * FORTUNE_CARDS.length);
-  window.localStorage.setItem("sft-daily-card-date", todayKey);
-  window.localStorage.setItem("sft-daily-card-index", String(nextIndex));
-  return nextIndex;
-}
-
 function getServiceIcon(slug: string) {
-  if (slug.includes("love") || slug.includes("compatibility")) {
+  if (slug.includes("love")) {
     return <Heart size={18} />;
   }
   if (slug.includes("money")) {
@@ -890,6 +859,7 @@ function getServiceIcon(slug: string) {
 function SiteNav() {
   return (
     <nav className="site-nav" aria-label="Site navigation">
+      <a className="home-rune" href="/" aria-label="Savage Fortune Teller home">SFT</a>
       <a href="/"><Home size={15} /> Roast</a>
       <a href="/readings"><Telescope size={15} /> Readings</a>
       <a href="/daily-card"><Shuffle size={15} /> Daily Card</a>
@@ -918,34 +888,87 @@ function ServiceGrid() {
   );
 }
 
-function DailyCardPull() {
-  const [cardIndex, setCardIndex] = React.useState(() => getDailyCardIndex());
-  const card = FORTUNE_CARDS[cardIndex];
+function getTarotSpriteStyle(spriteIndex: number) {
+  const column = spriteIndex % 3;
+  const row = Math.floor(spriteIndex / 3);
+  return {
+    "--sprite-x": `${column * 50}%`,
+    "--sprite-y": `${row * 100}%`,
+  } as React.CSSProperties;
+}
 
-  function pullAgain() {
-    const nextIndex = (cardIndex + 1 + Math.floor(Math.random() * (FORTUNE_CARDS.length - 1))) % FORTUNE_CARDS.length;
-    window.localStorage.setItem("sft-daily-card-date", new Date().toISOString().slice(0, 10));
-    window.localStorage.setItem("sft-daily-card-index", String(nextIndex));
-    setCardIndex(nextIndex);
+function DailyCardPull() {
+  const [cardIndex, setCardIndex] = React.useState<number | null>(null);
+  const card = cardIndex === null ? null : FORTUNE_CARDS[cardIndex];
+
+  function chooseCard(index: number) {
+    setCardIndex(index);
   }
 
   return (
     <div className="daily-card-tool">
-      <article className="drawn-card">
-        <span>SFT</span>
-        <h2>{card.name}</h2>
-        <p>{card.subtitle}</p>
+      <div className={card ? "tarot-spread has-selection" : "tarot-spread"} aria-label="Choose one SFT card">
+        {FORTUNE_CARDS.map((item, index) => (
+          <button
+            className={cardIndex === index ? "tarot-choice selected" : "tarot-choice"}
+            key={item.name}
+            type="button"
+            onClick={() => chooseCard(index)}
+            style={{ ...getTarotSpriteStyle(item.spriteIndex), "--fan-tilt": `${[-9, -4, 2, 7, -2, 5][index]}deg` } as React.CSSProperties}
+          >
+            <span className="tarot-image" />
+            <b>{item.name}</b>
+          </button>
+        ))}
+      </div>
+      <article className={card ? "drawn-card active" : "drawn-card"}>
+        {card ? (
+          <>
+            <span className="drawn-card-image" style={getTarotSpriteStyle(card.spriteIndex)} />
+            <h2>{card.name}</h2>
+            <p>{card.subtitle}</p>
+          </>
+        ) : (
+          <>
+            <span>SFT</span>
+            <h2>Pick the card that looks like it knows too much.</h2>
+            <p>The deck will stay quiet until you choose your problem.</p>
+          </>
+        )}
       </article>
       <div className="daily-card-copy">
         <p className="eyebrow">Today&apos;s symbolic evidence</p>
-        <h3>{card.verdict}</h3>
-        <p><b>Receipt:</b> {card.receipt}</p>
-        <p><b>Court-ordered advice:</b> {card.advice}</p>
-        <button type="button" className="secondary-button" onClick={pullAgain}>
-          <Shuffle size={17} />
-          Pull another card
-        </button>
+        {card ? (
+          <>
+            <h3>{card.verdict}</h3>
+            <p><b>Receipt:</b> {card.receipt}</p>
+            <p><b>Court-ordered advice:</b> {card.advice}</p>
+            <button type="button" className="secondary-button" onClick={() => setCardIndex(null)}>
+              <Shuffle size={17} />
+              Reset the spread
+            </button>
+          </>
+        ) : (
+          <>
+            <h3>The cards are spread. One of them is being rude in your direction.</h3>
+            <p><b>Receipt:</b> SFT cards use symbolic astrology-style meanings: Mercury for messages, Venus for value, Saturn for consequences.</p>
+            <p><b>Court-ordered advice:</b> Click one card. Do not overthink it unless overthinking is your brand.</p>
+          </>
+        )}
       </div>
+    </div>
+  );
+}
+
+function ServiceLoadingPanel({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
+  return (
+    <div className="ritual-panel service-loading-panel" aria-live="polite">
+      <div className="tarot-back revealing">
+        <span>SFT</span>
+      </div>
+      <p className="eyebrow">{eyebrow}</p>
+      <h2>{title}</h2>
+      <p>{copy}</p>
     </div>
   );
 }
@@ -1100,6 +1123,7 @@ function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
       return;
     }
 
+    const ritualStartedAt = Date.now();
     setLoading(true);
     setThemeReading(null);
 
@@ -1122,7 +1146,10 @@ function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
         throw new Error(`${config.errorPrefix} HTTP ${response.status}.`);
       }
 
-      setThemeReading((await response.json()) as ThemedReadingResponse);
+      const nextReading = (await response.json()) as ThemedReadingResponse;
+      const elapsed = Date.now() - ritualStartedAt;
+      await wait(Math.max(1200 - elapsed, 0));
+      setThemeReading(nextReading);
     } catch (err) {
       setError(err instanceof Error ? err.message : config.fallbackError);
     } finally {
@@ -1197,7 +1224,15 @@ function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
 
         {error && <div className="error">{error}</div>}
 
-        {themeReading && primary && (
+        {loading && (
+          <ServiceLoadingPanel
+            eyebrow={config.eyebrow}
+            title={config.loadingLabel}
+            copy="The chart is being cross-examined. Please wait while the evidence arranges itself into an accusation."
+          />
+        )}
+
+        {themeReading && primary && !loading && (
           <section className="service-result">
             <p className="score">{primary.score}% - {primary.result_badge}</p>
             <h2>{primary.viral_alias}</h2>
@@ -1320,6 +1355,7 @@ function LoveLifeRoastPage() {
       return;
     }
 
+    const ritualStartedAt = Date.now();
     setLoading(true);
     setLoveReading(null);
 
@@ -1342,7 +1378,10 @@ function LoveLifeRoastPage() {
         throw new Error(`The love court returned HTTP ${response.status}.`);
       }
 
-      setLoveReading((await response.json()) as LoveReadingResponse);
+      const nextReading = (await response.json()) as LoveReadingResponse;
+      const elapsed = Date.now() - ritualStartedAt;
+      await wait(Math.max(1200 - elapsed, 0));
+      setLoveReading(nextReading);
     } catch (err) {
       setError(err instanceof Error ? err.message : "The love court refused to convene.");
     } finally {
@@ -1417,7 +1456,15 @@ function LoveLifeRoastPage() {
 
         {error && <div className="error">{error}</div>}
 
-        {loveReading && (
+        {loading && (
+          <ServiceLoadingPanel
+            eyebrow="Love Life Roast"
+            title="Auditing your love life"
+            copy="Venus, Mars, and the Moon are being questioned separately so nobody can coordinate their story."
+          />
+        )}
+
+        {loveReading && !loading && (
           <section className="service-result">
             <p className="score">{loveReading.primary_love_type.score}% - {loveReading.primary_love_type.result_badge}</p>
             <h2>{loveReading.primary_love_type.viral_alias}</h2>
@@ -1727,7 +1774,7 @@ function StaticPage({ path }: { path: string }) {
               The language is savage for entertainment, but the structure is intentionally transparent. If the chart says Mercury is yelling, the result should show where Mercury was found yelling.
             </p>
             <p>
-              Birth Chart Roast is the first full chart lane. Love, money, career, and compatibility readings use the same evidence-first structure without turning every page into an academic basement.
+              Birth Chart Roast is the first full chart lane. Love, money, career, and energy readings use the same evidence-first structure without turning every page into an academic basement.
             </p>
           </>
         )}
@@ -2155,17 +2202,6 @@ function App() {
           </div>
 
           <div className="fortune-table" aria-label="Savage fortune reading cards">
-            <div className="seer-scene" aria-hidden="true">
-              <div className="hanging-lights">
-                <i />
-                <i />
-                <i />
-              </div>
-              <div className="seer-orb">
-                <span>SFT</span>
-              </div>
-            </div>
-
             <div className="service-card-table">
               {SERVICES.map((service, index) => {
                 const href = service.slug === "birth-chart-roast" ? "#birth-chart-roast-form" : `/${service.slug}`;
@@ -2474,6 +2510,15 @@ function App() {
           </div>
         </article>
 
+        <div className="section-grid">
+          {Object.entries(reading.section_titles).map(([key, title]) => (
+            <article className="reading-section" key={key}>
+              <h3>{title}</h3>
+              <p>{reading.sections[key]}</p>
+            </article>
+          ))}
+        </div>
+
         <ChartEvidence result={reading} />
 
         {scores.length > 0 && (
@@ -2492,15 +2537,6 @@ function App() {
             </div>
           </details>
         )}
-
-        <div className="section-grid">
-          {Object.entries(reading.section_titles).map(([key, title]) => (
-            <article className="reading-section" key={key}>
-              <h3>{title}</h3>
-              <p>{reading.sections[key]}</p>
-            </article>
-          ))}
-        </div>
         <footer className="site-footer">
           <a href="/readings">Readings</a>
           <a href="/daily-card">Daily Card</a>

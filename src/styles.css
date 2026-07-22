@@ -58,11 +58,10 @@ button {
   padding: 24px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 50% 8%, rgba(118, 73, 167, 0.3), transparent 18rem),
-    radial-gradient(circle at 50% 44%, rgba(116, 62, 172, 0.42), transparent 18rem),
-    radial-gradient(circle at 18% 62%, rgba(193, 118, 43, 0.24), transparent 16rem),
-    radial-gradient(circle at 82% 60%, rgba(222, 145, 61, 0.2), transparent 15rem),
-    linear-gradient(180deg, #050407 0%, #13091b 44%, #050407 100%);
+    linear-gradient(90deg, rgba(3, 5, 9, 0.9) 0%, rgba(5, 6, 10, 0.58) 44%, rgba(4, 5, 8, 0.72) 100%),
+    linear-gradient(180deg, rgba(4, 5, 8, 0.35) 0%, rgba(4, 5, 8, 0.82) 100%),
+    url("/assets/sft-hero.webp") center / cover no-repeat,
+    #050407;
 }
 
 .fortune-stage::before,
@@ -75,15 +74,15 @@ button {
 
 .fortune-stage::before {
   background:
-    linear-gradient(90deg, rgba(25, 6, 31, 0.88), transparent 18%, transparent 82%, rgba(25, 6, 31, 0.88)),
+    linear-gradient(90deg, rgba(5, 6, 10, 0.56), transparent 28%, transparent 76%, rgba(5, 6, 10, 0.42)),
     repeating-linear-gradient(90deg, transparent 0 68px, rgba(235, 174, 80, 0.035) 68px 70px);
 }
 
 .fortune-stage::after {
   background:
-    radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.09), transparent 2px),
-    radial-gradient(circle at 46% 28%, rgba(255, 255, 255, 0.16), transparent 1px),
-    radial-gradient(circle at 56% 22%, rgba(255, 255, 255, 0.14), transparent 1px),
+    radial-gradient(circle at 42% 16%, rgba(255, 255, 255, 0.09), transparent 2px),
+    radial-gradient(circle at 53% 24%, rgba(255, 255, 255, 0.13), transparent 1px),
+    radial-gradient(circle at 70% 19%, rgba(255, 255, 255, 0.11), transparent 1px),
     linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
 }
 
@@ -93,38 +92,35 @@ button {
 }
 
 .fortune-hero-copy {
-  width: min(100%, 900px);
-  margin: 28px auto 8px;
-  text-align: center;
+  width: min(100%, 620px);
+  margin: 58px 0 10px max(0px, calc((100vw - 1120px) / 2));
+  text-align: left;
 }
 
 .fortune-hero-copy h1 {
-  margin: 0 auto 14px;
-  max-width: 860px;
+  margin: 0 0 14px;
+  max-width: 620px;
   color: #f7e6bd;
-  font-size: clamp(42px, 7vw, 92px);
-  line-height: 0.95;
+  font-size: clamp(32px, 4.4vw, 50px);
+  line-height: 1.02;
   text-shadow: 0 0 34px rgba(139, 76, 211, 0.32);
 }
 
 .fortune-hero-copy p {
-  max-width: 700px;
-  margin: 0 auto;
+  max-width: 540px;
+  margin: 0;
   color: #d8c8aa;
-  font-size: clamp(16px, 2vw, 21px);
+  font-size: clamp(15px, 1.6vw, 18px);
   line-height: 1.45;
 }
 
 .fortune-table {
   width: min(100%, 1100px);
-  margin: 28px auto 0;
+  margin: 34px auto 0;
 }
 
 .seer-scene {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  min-height: 210px;
+  display: none;
 }
 
 .hanging-lights {
@@ -180,16 +176,16 @@ button {
 .service-card-table {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(12px, 2vw, 26px);
+  gap: clamp(10px, 1.6vw, 18px);
   align-items: stretch;
-  margin-top: -12px;
+  margin-top: 0;
 }
 
 .fortune-choice-card {
   position: relative;
-  min-height: 250px;
+  min-height: 178px;
   border: 1px solid rgba(224, 191, 110, 0.62);
-  padding: 18px;
+  padding: 15px;
   color: #eedeb8;
   background:
     radial-gradient(circle at 50% 38%, rgba(238, 202, 116, 0.16), transparent 27%),
@@ -228,9 +224,9 @@ button {
 .card-moon {
   display: grid;
   place-items: center;
-  width: 70px;
+  width: 48px;
   aspect-ratio: 1;
-  margin: 10px auto 18px;
+  margin: 4px auto 12px;
   border: 1px solid rgba(224, 191, 110, 0.48);
   border-radius: 50%;
   color: #f3d78d;
@@ -241,8 +237,8 @@ button {
   display: block;
   color: #f7e6bd;
   font-family: "Cinzel Local", Georgia, serif;
-  font-size: clamp(20px, 2.2vw, 30px);
-  line-height: 1.05;
+  font-size: clamp(17px, 1.8vw, 23px);
+  line-height: 1.08;
 }
 
 .fortune-choice-card em {
@@ -261,7 +257,7 @@ button {
   display: block;
   margin-top: 14px;
   color: #cfc1a1;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.42;
 }
 
@@ -349,9 +345,9 @@ p {
 h1 {
   margin-bottom: 0;
   font-family: "Cinzel Local", Georgia, serif;
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 600;
-  line-height: 1.04;
+  line-height: 1.08;
 }
 
 .birth-form {
@@ -654,7 +650,7 @@ select:focus {
 .ritual-panel h2 {
   max-width: 720px;
   margin-bottom: 0;
-  font-size: clamp(34px, 5vw, 64px);
+  font-size: clamp(28px, 4vw, 44px);
 }
 
 .intro-panel p,
@@ -662,7 +658,7 @@ select:focus {
   max-width: 560px;
   margin-bottom: 0;
   color: #cfc1a1;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.48;
 }
 
@@ -693,6 +689,17 @@ select:focus {
 
 .ritual-panel .tarot-back {
   animation: card-float 1.4s ease-in-out infinite alternate;
+}
+
+.service-loading-panel {
+  max-width: 720px;
+  margin: 24px 0 0;
+  border: 1px solid rgba(201, 170, 99, 0.22);
+  background: rgba(4, 6, 10, 0.38);
+}
+
+.service-loading-panel .tarot-back {
+  width: min(44vw, 180px);
 }
 
 .tarot-back.revealing {
@@ -742,9 +749,9 @@ h2 {
   margin-bottom: 8px;
   color: #f4e5bd;
   font-family: "Cinzel Local", Georgia, serif;
-  font-size: clamp(28px, 3vw, 44px);
+  font-size: clamp(26px, 2.7vw, 38px);
   font-weight: 600;
-  line-height: 1.02;
+  line-height: 1.08;
   overflow-wrap: normal;
 }
 
@@ -754,7 +761,7 @@ h2 {
   border-bottom: 1px solid rgba(158, 208, 202, 0.46);
   padding-bottom: 5px;
   color: #9ed0ca;
-  font-size: clamp(16px, 1.5vw, 22px);
+  font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -940,6 +947,15 @@ h2 {
   text-transform: uppercase;
 }
 
+.site-nav .home-rune {
+  min-width: 42px;
+  justify-content: center;
+  border-color: rgba(226, 193, 110, 0.62);
+  color: #11100d;
+  background: linear-gradient(180deg, #e2c16e, #a77d34);
+  font-weight: 800;
+}
+
 .site-nav a:hover,
 .policy-links a:hover,
 .site-footer a:hover,
@@ -1114,21 +1130,21 @@ h2 {
 
 .content-page h1 {
   max-width: 760px;
-  font-size: clamp(34px, 5vw, 62px);
-  line-height: 1.02;
+  font-size: clamp(26px, 3.2vw, 38px);
+  line-height: 1.08;
 }
 
 .content-page p {
   max-width: 760px;
   color: #cfc1a1;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.62;
 }
 
 .content-page .lede {
   margin-top: 14px;
   color: #efe3c2;
-  font-size: clamp(18px, 2vw, 24px);
+  font-size: clamp(15px, 1.5vw, 18px);
   line-height: 1.42;
 }
 
@@ -1342,19 +1358,82 @@ h2 {
 
 .daily-card-tool {
   display: grid;
-  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
-  gap: 22px;
-  align-items: center;
+  grid-template-columns: minmax(300px, 1.1fr) minmax(230px, 0.9fr);
+  gap: 18px;
+  align-items: stretch;
   margin-top: 24px;
+}
+
+.tarot-spread {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-content: center;
+  perspective: 900px;
+}
+
+.tarot-choice {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(226, 193, 110, 0.32);
+  padding: 7px;
+  color: #d9c99e;
+  background: rgba(6, 8, 12, 0.72);
+  text-align: center;
+  transform: translateY(0) rotate(var(--fan-tilt));
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+}
+
+.tarot-choice:hover,
+.tarot-choice:focus {
+  border-color: rgba(226, 193, 110, 0.82);
+  box-shadow: 0 0 28px rgba(160, 84, 223, 0.34);
+  transform: translateY(-10px) rotate(0deg);
+}
+
+.tarot-spread.has-selection .tarot-choice:not(.selected) {
+  opacity: 0.52;
+  transform: translateY(8px) rotate(var(--fan-tilt)) scale(0.94);
+}
+
+.tarot-choice.selected {
+  z-index: 2;
+  border-color: rgba(226, 193, 110, 0.96);
+  box-shadow: 0 12px 42px rgba(0, 0, 0, 0.46), 0 0 38px rgba(160, 84, 223, 0.44);
+  transform: translateY(-18px) rotate(0deg) scale(1.04);
+}
+
+.tarot-image,
+.drawn-card-image {
+  display: block;
+  background-image: url("/assets/sft-tarot-sprite.webp");
+  background-size: 300% 200%;
+  background-position: var(--sprite-x) var(--sprite-y);
+  background-repeat: no-repeat;
+}
+
+.tarot-image {
+  width: 100%;
+  aspect-ratio: 4 / 5.6;
+  border: 1px solid rgba(226, 193, 110, 0.28);
+}
+
+.tarot-choice b {
+  color: #f4e5bd;
+  font-family: "Cinzel Local", Georgia, serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.14;
 }
 
 .drawn-card {
   display: grid;
   align-content: center;
   justify-items: center;
-  min-height: 390px;
+  min-height: 360px;
   border: 1px solid rgba(226, 193, 110, 0.58);
-  padding: 22px;
+  padding: 16px;
   background:
     radial-gradient(circle at 50% 32%, rgba(226, 193, 110, 0.16), transparent 42%),
     repeating-linear-gradient(45deg, rgba(226, 193, 110, 0.11) 0 1px, transparent 1px 12px),
@@ -1363,7 +1442,18 @@ h2 {
   text-align: center;
 }
 
-.drawn-card span {
+.drawn-card.active {
+  animation: card-pop 280ms ease both;
+}
+
+.drawn-card-image {
+  width: min(100%, 210px);
+  aspect-ratio: 4 / 5.6;
+  border: 1px solid rgba(226, 193, 110, 0.44);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.46);
+}
+
+.drawn-card > span:not(.drawn-card-image) {
   display: grid;
   place-items: center;
   width: 62px;
@@ -1373,9 +1463,15 @@ h2 {
   font-weight: 700;
 }
 
+.drawn-card .drawn-card-image {
+  display: block;
+  width: min(100%, 210px);
+  aspect-ratio: 4 / 5.6;
+}
+
 .drawn-card h2 {
-  margin: 24px 0 10px;
-  font-size: clamp(28px, 4vw, 42px);
+  margin: 18px 0 10px;
+  font-size: clamp(22px, 3vw, 30px);
 }
 
 .drawn-card p,
@@ -1384,16 +1480,17 @@ h2 {
 }
 
 .daily-card-copy {
+  grid-column: 1 / -1;
   min-width: 0;
   border-block: 1px solid rgba(201, 170, 99, 0.22);
-  padding-block: 20px;
+  padding-block: 18px;
 }
 
 .daily-card-copy h3 {
   margin-bottom: 14px;
   color: #f4e5bd;
   font-family: "Cinzel Local", Georgia, serif;
-  font-size: clamp(24px, 3vw, 34px);
+  font-size: clamp(19px, 2vw, 25px);
   line-height: 1.1;
 }
 
@@ -1407,6 +1504,17 @@ h2 {
 
 .daily-card-copy button {
   margin-top: 18px;
+}
+
+@keyframes card-pop {
+  from {
+    opacity: 0.7;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .faq-list {
@@ -1449,7 +1557,7 @@ h2 {
 }
 
 .service-result h2 {
-  font-size: clamp(32px, 5vw, 58px);
+  font-size: clamp(26px, 3.4vw, 38px);
 }
 
 .love-three {
@@ -1463,8 +1571,11 @@ h2 {
   .archetype-list,
   .service-grid,
   .service-detail,
-  .daily-card-tool,
   .service-card-table {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-card-tool {
     grid-template-columns: 1fr;
   }
 
@@ -1484,17 +1595,13 @@ h2 {
     padding: 16px;
   }
 
-  .seer-scene {
-    min-height: 170px;
-  }
-
-  .seer-orb {
-    margin-top: 54px;
-  }
-
   .fortune-choice-card {
     min-height: 190px;
     transform: none;
+  }
+
+  .fortune-hero-copy {
+    margin-left: 0;
   }
 }
 
@@ -1503,8 +1610,7 @@ h2 {
     padding: 12px;
   }
 
-  .birth-form,
-  .deck-strip {
+  .birth-form {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -1514,7 +1620,7 @@ h2 {
   }
 
   .fortune-hero-copy h1 {
-    font-size: 40px;
+    font-size: 34px;
   }
 
   .fortune-hero-copy {
@@ -1540,7 +1646,21 @@ h2 {
   }
 
   h2 {
-    font-size: 32px;
+    font-size: 28px;
+  }
+
+  .tarot-spread {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .tarot-choice {
+    padding: 5px;
+    transform: none;
+  }
+
+  .tarot-choice b {
+    font-size: 9px;
   }
 
   .result-card {
