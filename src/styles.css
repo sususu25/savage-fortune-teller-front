@@ -881,6 +881,7 @@ h2 {
 .secondary-button {
   width: fit-content;
   padding: 0 18px;
+  text-decoration: none;
 }
 
 .secondary-button {
@@ -1006,6 +1007,10 @@ h2 {
   color: #c9bea5;
   font-size: 15px;
   line-height: 1.52;
+}
+
+.reading-section.wide-section {
+  grid-column: 1 / -1;
 }
 
 .site-nav {
@@ -1854,6 +1859,24 @@ h2 {
   color: rgba(217, 201, 158, 0.78);
   font-size: 12px;
   line-height: 1.35;
+}
+
+.planetary-badge {
+  width: fit-content;
+  margin: -10px 0 16px;
+  color: #9ed0ca;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.planetary-result .reading-section p {
+  white-space: pre-line;
+}
+
+.planetary-actions {
+  margin-top: 22px;
 }
 
 .signature-strip {

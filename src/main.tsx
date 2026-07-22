@@ -853,6 +853,50 @@ function formatPlacement(body?: ChartBody) {
   return `${formatSign(body.sign)} ${degree}${house}`;
 }
 
+function formatAstroDegree(degree: number) {
+  if (!Number.isFinite(degree)) {
+    return "Degree unknown";
+  }
+
+  let wholeDegrees = Math.floor(degree);
+  let minutes = Math.round((degree - wholeDegrees) * 60);
+
+  if (minutes === 60) {
+    wholeDegrees += 1;
+    minutes = 0;
+  }
+
+  return `${wholeDegrees}°${String(minutes).padStart(2, "0")}′`;
+}
+
+function formatHouseLabel(house?: number) {
+  if (!house) {
+    return "House unknown";
+  }
+
+  const suffix = house === 1 ? "st" : house === 2 ? "nd" : house === 3 ? "rd" : "th";
+  return `${house}${suffix} House`;
+}
+
+function formatAstroPlacement(planetCode: string, body?: ChartBody) {
+  if (!body) {
+    return {
+      title: `${formatBodyName(planetCode)} placement unknown`,
+      detail: "Birth time or chart data may be missing",
+    };
+  }
+
+  return {
+    title: `${formatBodyName(planetCode)} in ${formatSign(body.sign)}`,
+    detail: `${formatAstroDegree(body.degree)} · ${formatHouseLabel(body.house)}`,
+  };
+}
+
+function formatPlanetaryStrength(planet: PlanetScore) {
+  const strength = planet.score >= 75 ? "Very Strong" : planet.score >= 55 ? "Strong" : planet.score >= 35 ? "Moderate" : "Subtle";
+  return `${strength} ${formatBodyName(planet.code)} Signature`;
+}
+
 function getTopReceipts(result: ReadingResponse) {
   const matched = result.primary_type.matched_features ?? [];
   const receiptLines = matched
@@ -1414,6 +1458,7 @@ function PlanetaryTypePage() {
   const [planetReading, setPlanetReading] = React.useState<PlanetaryReadingResponse | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [shareCopied, setShareCopied] = React.useState(false);
 
   React.useEffect(() => {
     const query = locationQuery.trim();
@@ -1493,6 +1538,7 @@ function PlanetaryTypePage() {
     const ritualStartedAt = Date.now();
     setLoading(true);
     setPlanetReading(null);
+    setShareCopied(false);
 
     try {
       const response = await fetch(`${API_BASE_URL}/planetary-readings`, {
@@ -1526,6 +1572,40 @@ function PlanetaryTypePage() {
 
   const primary = planetReading?.primary_planet_type;
   const planetScores = Object.values(planetReading?.all_planet_scores ?? {}).sort((a, b) => b.score - a.score);
+  const dominantPlacement = primary && planetReading?.chart ? formatAstroPlacement(primary.code, planetReading.chart.planets[primary.code]) : null;
+  const rulerBody = planetReading?.chart_ruler.code && planetReading.chart ? planetReading.chart.planets[planetReading.chart_ruler.code] : undefined;
+  const rulerPlacement = planetReading?.chart_ruler.code ? formatAstroPlacement(planetReading.chart_ruler.code, rulerBody) : null;
+  const risingSign = planetReading?.chart?.angles.asc?.sign ? formatSign(planetReading.chart.angles.asc.sign) : planetReading?.chart_ruler.ruler_of;
+
+  async function sharePlanetaryResult() {
+    if (!primary) {
+      return;
+    }
+
+    const shareText = `I got ${formatPlanetaryStrength(primary).toUpperCase()}: ${primary.viral_alias}. ${primary.headline}`;
+    const shareUrl = `${window.location.origin}/planetary-type-reading`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "Savage Fortune Teller",
+          text: shareText,
+          url: shareUrl,
+        });
+        return;
+      }
+
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+        setShareCopied(true);
+        window.setTimeout(() => setShareCopied(false), 1800);
+      }
+    } catch (shareError) {
+      if (!(shareError instanceof DOMException && shareError.name === "AbortError")) {
+        setError(shareError instanceof Error ? shareError.message : "The share button got dramatic.");
+      }
+    }
+  }
 
   return (
     <main className="content-shell">
@@ -1599,7 +1679,8 @@ function PlanetaryTypePage() {
 
         {planetReading && primary && !loading && (
           <section className="service-result planetary-result">
-            <p className="score">{primary.score}% - {primary.result_badge}</p>
+            <p className="score">{formatPlanetaryStrength(primary)}</p>
+            <p className="planetary-badge">{primary.result_badge}</p>
             <h2>{primary.viral_alias}</h2>
             <p className="official-name">{primary.label}</p>
             <p className="headline">{primary.headline}</p>
@@ -1607,18 +1688,20 @@ function PlanetaryTypePage() {
             <div className="planetary-summary">
               <article>
                 <span>Chart Ruler</span>
-                <b>{planetReading.chart_ruler.label}</b>
-                <small>{planetReading.chart_ruler.ruler_of} rising - {planetReading.chart_ruler.placement}</small>
+                <b>{risingSign} Rising → {rulerPlacement?.title ?? planetReading.chart_ruler.label}</b>
+                <small>{rulerPlacement?.detail ?? planetReading.chart_ruler.placement}</small>
+                <small>The planet ruling your Rising sign. It describes how you navigate life.</small>
               </article>
               <article>
                 <span>Dominant Planet</span>
-                <b>{formatBodyName(planetReading.dominant_planet.code)}</b>
-                <small>{planetReading.dominant_planet.placement}</small>
+                <b>{dominantPlacement?.title ?? formatBodyName(planetReading.dominant_planet.code)}</b>
+                <small>{dominantPlacement?.detail ?? planetReading.dominant_planet.placement}</small>
+                <small>The highest-scoring planet in our weighted chart analysis.</small>
               </article>
               <article>
                 <span>Loudest Planets</span>
                 <b>{planetReading.loudest_planets.map((planet) => formatBodyName(planet.code)).join(" / ")}</b>
-                <small>Top three suspects by weighted chart evidence</small>
+                <small>Your top three planetary influences. These are the types to follow in our forecasts.</small>
               </article>
             </div>
 
@@ -1632,16 +1715,27 @@ function PlanetaryTypePage() {
 
             <div className="section-grid">
               {Object.entries(planetReading.section_titles).map(([key, title]) => (
-                <article className="reading-section" key={key}>
+                <article className={key === "real_life" || key === "the_receipts" ? "reading-section wide-section" : "reading-section"} key={key}>
                   <h3>{title}</h3>
                   <p>{planetReading.sections[key]}</p>
                 </article>
               ))}
             </div>
 
+            <div className="result-actions planetary-actions">
+              <button className="share-button" type="button" onClick={sharePlanetaryResult}>
+                <Share2 size={17} />
+                {shareCopied ? "Copied result" : "Share my result"}
+              </button>
+              <a className="secondary-button" href="/love-life-roast">
+                <Heart size={17} />
+                Read my love roast
+              </a>
+            </div>
+
             {planetScores.length > 0 && (
               <details className="score-board">
-                <summary>All planetary suspects</summary>
+                <summary>Full Chart Evidence</summary>
                 <div className="score-list">
                   {planetScores.map((planet) => (
                     <div className="score-row" key={planet.code}>
@@ -1649,7 +1743,7 @@ function PlanetaryTypePage() {
                       <div>
                         <i style={{ width: `${Math.max(planet.score, 8)}%` }} />
                       </div>
-                      <b>{planet.score}%</b>
+                      <b>{planet.score}/100</b>
                     </div>
                   ))}
                 </div>
