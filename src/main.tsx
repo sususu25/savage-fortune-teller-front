@@ -98,6 +98,35 @@ type ThemedReadingResponse = {
   chart?: ChartResponse;
 };
 
+type PlanetScore = {
+  code: string;
+  label: string;
+  viral_alias: string;
+  result_badge: string;
+  headline: string;
+  score: number;
+  placement: string;
+  matched_features?: string[];
+  receipts?: string[];
+};
+
+type PlanetaryReadingResponse = {
+  primary_planet_type: PlanetScore;
+  chart_ruler: {
+    code: string | null;
+    label: string;
+    placement: string;
+    ruler_of: string;
+  };
+  dominant_planet: PlanetScore;
+  loudest_planets: PlanetScore[];
+  signatures: string[];
+  section_titles: Record<string, string>;
+  sections: Record<string, string>;
+  all_planet_scores?: Record<string, PlanetScore>;
+  chart?: ChartResponse;
+};
+
 type ThemedPrimaryKey = "primary_money_type" | "primary_career_type" | "primary_energy_type";
 
 type ThemedReadingPageConfig = {
@@ -538,6 +567,15 @@ const SERVICES: ServiceCard[] = [
     status: "live",
   },
   {
+    slug: "planetary-type-reading",
+    name: "Planetary Type Reading",
+    shortName: "Planet Type",
+    badge: "live",
+    summary: "Find the dominant planet running your chart: chart ruler, loudest planets, signatures, and receipts.",
+    science: "Scores Sun through Pluto using chart ruler, angularity, Ascendant/MC contacts, personal-planet aspects, houses, and repeated chart themes.",
+    status: "live",
+  },
+  {
     slug: "money-curse-reading",
     name: "Money Curse Reading",
     shortName: "Money",
@@ -838,6 +876,9 @@ function getTopReceipts(result: ReadingResponse) {
 }
 
 function getServiceIcon(slug: string) {
+  if (slug.includes("planetary")) {
+    return <Orbit size={18} />;
+  }
   if (slug.includes("love")) {
     return <Heart size={18} />;
   }
@@ -1362,6 +1403,266 @@ function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
   );
 }
 
+function PlanetaryTypePage() {
+  const [birthDate, setBirthDate] = React.useState("2000-01-01");
+  const [birthTime, setBirthTime] = React.useState("12:00");
+  const [unknownBirthTime, setUnknownBirthTime] = React.useState(false);
+  const [locationQuery, setLocationQuery] = React.useState(`${defaultLocation.city}, ${defaultLocation.country}`);
+  const [selectedLocation, setSelectedLocation] = React.useState<LocationOption | null>(defaultLocation);
+  const [suggestions, setSuggestions] = React.useState<LocationOption[]>([]);
+  const [locationLoading, setLocationLoading] = React.useState(false);
+  const [planetReading, setPlanetReading] = React.useState<PlanetaryReadingResponse | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+
+  React.useEffect(() => {
+    const query = locationQuery.trim();
+    const selectedLabel = selectedLocation ? `${selectedLocation.city}, ${selectedLocation.country}` : "";
+
+    if (query.length < 2 || query === selectedLabel) {
+      setSuggestions([]);
+      setLocationLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      setLocationLoading(true);
+      const params = new URLSearchParams({ city: query, limit: "8" });
+
+      fetch(`${API_BASE_URL}/locations/search?${params.toString()}`, { signal: controller.signal })
+        .then((response) => {
+          if (!response.ok) throw new Error(`Location search failed with HTTP ${response.status}.`);
+          return response.json() as Promise<LocationSearchResponse>;
+        })
+        .then((data) => {
+          const remoteLocations = data.locations ?? (data.location ? [data.location] : []);
+          const nextSuggestions = remoteLocations.map(toLocationOption);
+          setSuggestions(
+            nextSuggestions.length > 0
+              ? nextSuggestions
+              : fallbackLocations.filter((location) =>
+                  `${location.city}, ${location.country}`.toLowerCase().includes(query.toLowerCase()),
+                ),
+          );
+        })
+        .catch(() => {
+          setSuggestions(
+            fallbackLocations.filter((location) =>
+              `${location.city}, ${location.country}`.toLowerCase().includes(query.toLowerCase()),
+            ),
+          );
+        })
+        .finally(() => setLocationLoading(false));
+    }, 250);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [locationQuery, selectedLocation]);
+
+  function choosePlanetLocation(location: LocationOption) {
+    setSelectedLocation(location);
+    setLocationQuery(`${location.city}, ${location.country}`);
+    setSuggestions([]);
+    setError("");
+  }
+
+  async function requestPlanetaryReading(event: React.FormEvent) {
+    event.preventDefault();
+    setError("");
+
+    if (!isValidIsoDate(birthDate)) {
+      setError("Use YYYY-MM-DD for the birth date. The planets respect evidence, not vibes in a trench coat.");
+      return;
+    }
+
+    const effectiveBirthTime = unknownBirthTime ? "12:00" : birthTime;
+
+    if (!isValidTime(effectiveBirthTime)) {
+      setError("Use 24-hour HH:MM time. The planet court rejects vibes o'clock.");
+      return;
+    }
+
+    if (!selectedLocation || locationQuery !== `${selectedLocation.city}, ${selectedLocation.country}`) {
+      setError("Choose a city from the suggestions so the planetary evidence can be placed in houses.");
+      return;
+    }
+
+    const ritualStartedAt = Date.now();
+    setLoading(true);
+    setPlanetReading(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/planetary-readings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birth_date: birthDate,
+          birth_time: effectiveBirthTime,
+          birth_city: selectedLocation.city,
+          birth_country: selectedLocation.country,
+          latitude: selectedLocation.latitude,
+          longitude: selectedLocation.longitude,
+          timezone: selectedLocation.timezone,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`The planetary court returned HTTP ${response.status}.`);
+      }
+
+      const nextReading = (await response.json()) as PlanetaryReadingResponse;
+      const elapsed = Date.now() - ritualStartedAt;
+      await wait(Math.max(1200 - elapsed, 0));
+      setPlanetReading(nextReading);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "The planetary court refused to identify the loudest suspect.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const primary = planetReading?.primary_planet_type;
+  const planetScores = Object.values(planetReading?.all_planet_scores ?? {}).sort((a, b) => b.score - a.score);
+
+  return (
+    <main className="content-shell">
+      <SiteNav />
+      <section className="content-page service-workspace">
+        <p className="eyebrow">Planetary Type Reading</p>
+        <h1>Which planet is running the building?</h1>
+        <p className="lede">
+          A dominant-planet reading that checks chart ruler, angularity, personal aspects, house emphasis, and repeated signatures before accusing anyone.
+        </p>
+
+        <form className="birth-form service-form" onSubmit={requestPlanetaryReading}>
+          <label>
+            <span><CalendarDays size={15} /> Birth date <em>required</em></span>
+            <input value={birthDate} onChange={(event) => setBirthDate(event.target.value)} type="date" aria-label="Birth date" />
+          </label>
+          <BirthTimeField
+            id="planetary-unknown-birth-time"
+            birthTime={birthTime}
+            setBirthTime={setBirthTime}
+            unknownBirthTime={unknownBirthTime}
+            setUnknownBirthTime={setUnknownBirthTime}
+          />
+          <label className="wide location-field">
+            <span><MapPin size={15} /> Birthplace <em>choose from list</em></span>
+            <div className="location-input-wrap">
+              <Search size={16} />
+              <input
+                value={locationQuery}
+                onChange={(event) => {
+                  setLocationQuery(event.target.value);
+                  setSelectedLocation(null);
+                }}
+                placeholder="Start typing any city..."
+                aria-label="Birthplace search"
+              />
+            </div>
+            {suggestions.length > 0 && locationQuery !== `${selectedLocation?.city}, ${selectedLocation?.country}` && (
+              <div className="suggestions">
+                {suggestions.map((location) => (
+                  <button key={location.id} type="button" onClick={() => choosePlanetLocation(location)}>
+                    <strong>{location.normalized_query ?? `${location.city}, ${location.country}`}</strong>
+                    <span>{location.timezone}{location.source ? ` - ${location.source}` : ""}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </label>
+
+          <div className="auto-coordinates wide">
+            <span>{locationLoading ? "Searching birthplace..." : "Angles, houses, and planetary receipts need coordinates."}</span>
+            <b>{selectedLocation ? `${selectedLocation.latitude}, ${selectedLocation.longitude}` : "Select a city"}</b>
+            <b>{selectedLocation?.timezone ?? "Timezone pending"}</b>
+          </div>
+
+          <button type="submit" disabled={loading}>
+            <Orbit size={18} />
+            {loading ? "Interrogating the planets" : "Find my planet type"}
+          </button>
+        </form>
+
+        {error && <div className="error">{error}</div>}
+
+        {loading && (
+          <ServiceLoadingPanel
+            eyebrow="Planetary Type Reading"
+            title="Interrogating the planets"
+            copy="The chart ruler is being questioned. Saturn brought paperwork. Neptune is pretending not to understand the question."
+          />
+        )}
+
+        {planetReading && primary && !loading && (
+          <section className="service-result planetary-result">
+            <p className="score">{primary.score}% - {primary.result_badge}</p>
+            <h2>{primary.viral_alias}</h2>
+            <p className="official-name">{primary.label}</p>
+            <p className="headline">{primary.headline}</p>
+
+            <div className="planetary-summary">
+              <article>
+                <span>Chart Ruler</span>
+                <b>{planetReading.chart_ruler.label}</b>
+                <small>{planetReading.chart_ruler.ruler_of} rising - {planetReading.chart_ruler.placement}</small>
+              </article>
+              <article>
+                <span>Dominant Planet</span>
+                <b>{formatBodyName(planetReading.dominant_planet.code)}</b>
+                <small>{planetReading.dominant_planet.placement}</small>
+              </article>
+              <article>
+                <span>Loudest Planets</span>
+                <b>{planetReading.loudest_planets.map((planet) => formatBodyName(planet.code)).join(" / ")}</b>
+                <small>Top three suspects by weighted chart evidence</small>
+              </article>
+            </div>
+
+            {planetReading.signatures.length > 0 && (
+              <div className="signature-strip" aria-label="Chart signatures">
+                {planetReading.signatures.map((signature) => (
+                  <span key={signature}>{signature}</span>
+                ))}
+              </div>
+            )}
+
+            <div className="section-grid">
+              {Object.entries(planetReading.section_titles).map(([key, title]) => (
+                <article className="reading-section" key={key}>
+                  <h3>{title}</h3>
+                  <p>{planetReading.sections[key]}</p>
+                </article>
+              ))}
+            </div>
+
+            {planetScores.length > 0 && (
+              <details className="score-board">
+                <summary>All planetary suspects</summary>
+                <div className="score-list">
+                  {planetScores.map((planet) => (
+                    <div className="score-row" key={planet.code}>
+                      <span>{formatBodyName(planet.code)} - {planet.label}</span>
+                      <div>
+                        <i style={{ width: `${Math.max(planet.score, 8)}%` }} />
+                      </div>
+                      <b>{planet.score}%</b>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            )}
+          </section>
+        )}
+      </section>
+      <ContactPoint />
+    </main>
+  );
+}
+
 function LoveLifeRoastPage() {
   const [birthDate, setBirthDate] = React.useState("2000-01-01");
   const [birthTime, setBirthTime] = React.useState("12:00");
@@ -1744,6 +2045,10 @@ function StaticPage({ path }: { path: string }) {
 
   if (cleanPath === "/love-life-roast") {
     return <LoveLifeRoastPage />;
+  }
+
+  if (cleanPath === "/planetary-type-reading") {
+    return <PlanetaryTypePage />;
   }
 
   if (THEMED_READING_CONFIGS[serviceEntry?.slug ?? ""]) {

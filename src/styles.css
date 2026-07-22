@@ -1821,6 +1821,57 @@ h2 {
   font-size: clamp(26px, 3.4vw, 38px);
 }
 
+.planetary-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.planetary-summary article {
+  display: grid;
+  gap: 7px;
+  border: 1px solid rgba(201, 170, 99, 0.24);
+  padding: 14px;
+  background: rgba(4, 6, 10, 0.44);
+}
+
+.planetary-summary span {
+  color: #9ed0ca;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.planetary-summary b {
+  color: #f4e5bd;
+  font-family: "Cinzel Local", Georgia, serif;
+  font-size: clamp(20px, 2vw, 28px);
+  line-height: 1.05;
+}
+
+.planetary-summary small {
+  color: rgba(217, 201, 158, 0.78);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.signature-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 22px;
+}
+
+.signature-strip span {
+  border: 1px solid rgba(158, 208, 202, 0.28);
+  padding: 7px 9px;
+  color: #c8e4df;
+  background: rgba(39, 93, 92, 0.16);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
 .love-three {
   margin: 22px 0 0;
 }
@@ -1832,6 +1883,7 @@ h2 {
   .archetype-list,
   .service-grid,
   .service-detail,
+  .planetary-summary,
   .service-card-table {
     grid-template-columns: 1fr;
   }
