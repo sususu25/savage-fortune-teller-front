@@ -256,6 +256,18 @@ button {
   text-transform: uppercase;
 }
 
+.free-rite {
+  display: inline-block;
+  margin: 7px 0 0 6px;
+  border: 1px solid rgba(226, 193, 110, 0.22);
+  padding: 5px 8px;
+  color: #d8b867;
+  background: rgba(83, 52, 18, 0.18);
+  font-size: 10px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .fortune-choice-card small {
   display: block;
   margin-top: 9px;
@@ -727,6 +739,13 @@ select:focus {
 .service-workspace:has(.service-loading-panel) > h1,
 .service-workspace:has(.service-loading-panel) > .lede,
 .service-workspace:has(.service-loading-panel) > .service-form {
+  display: none;
+}
+
+.service-workspace:has(.service-result) > .eyebrow,
+.service-workspace:has(.service-result) > h1,
+.service-workspace:has(.service-result) > .lede,
+.service-workspace:has(.service-result) > .service-form {
   display: none;
 }
 
@@ -1424,6 +1443,11 @@ h2 {
   line-height: 1.42;
 }
 
+.service-grid .free-rite {
+  margin: 0 0 10px 6px;
+  vertical-align: top;
+}
+
 .service-detail {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1479,7 +1503,7 @@ h2 {
   position: absolute;
   left: var(--card-x);
   top: var(--card-y);
-  width: clamp(76px, 8.2vw, 108px);
+  width: clamp(68px, 7.2vw, 96px);
   aspect-ratio: 4 / 5.6;
   border: 1px solid rgba(226, 193, 110, 0.64);
   padding: 0;
@@ -1699,9 +1723,9 @@ h2 {
 }
 
 .service-result {
-  margin-top: 26px;
-  border-top: 1px solid rgba(201, 170, 99, 0.24);
-  padding-top: 24px;
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 0;
 }
 
 .service-result h2 {

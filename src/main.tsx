@@ -523,7 +523,7 @@ const SERVICES: ServiceCard[] = [
     slug: "daily-card",
     name: "Daily Card Pull",
     shortName: "Daily Card",
-    badge: "free mini pull",
+    badge: "live",
     summary: "A tarot-ish one-card omen for the day. No mystical invoice, just a tiny symbolic slap on the wrist.",
     science: "Uses a seeded card deck and archetypal meanings; good for mood, not life-changing paperwork.",
     status: "free",
@@ -878,6 +878,7 @@ function ServiceGrid() {
           <a href={href} key={service.slug}>
             <span className="service-icon">{getServiceIcon(service.slug)}</span>
             <em>{service.badge}</em>
+            <span className="free-rite">Free beta</span>
             <b>{service.name}</b>
             <p>{service.summary}</p>
             <small>{service.science}</small>
@@ -898,24 +899,24 @@ function getTarotSpriteStyle(spriteIndex: number) {
 }
 
 const dailyCardPositions = [
-  [6, 65, -18],
-  [12, 58, -14],
-  [18, 62, -10],
-  [24, 56, -7],
-  [30, 60, -4],
-  [36, 54, -1],
-  [42, 59, 3],
-  [48, 53, 6],
-  [54, 58, 9],
-  [60, 52, 12],
-  [66, 57, 15],
-  [72, 51, 18],
-  [10, 72, -16],
-  [22, 70, -9],
-  [34, 72, -3],
-  [46, 69, 5],
-  [58, 71, 11],
-  [70, 68, 17],
+  [6, 42, -18],
+  [12, 36, -14],
+  [18, 39, -10],
+  [24, 34, -7],
+  [30, 38, -4],
+  [36, 33, -1],
+  [42, 37, 3],
+  [48, 32, 6],
+  [54, 36, 9],
+  [60, 31, 12],
+  [66, 35, 15],
+  [72, 30, 18],
+  [10, 50, -16],
+  [22, 48, -9],
+  [34, 50, -3],
+  [46, 47, 5],
+  [58, 49, 11],
+  [70, 46, 17],
 ];
 
 function DailyCardPull() {
@@ -1861,7 +1862,10 @@ function StaticPage({ path }: { path: string }) {
               When you create a reading, birth date, birth time, birthplace, coordinates, timezone, and generated result data may be sent to the API. Shared readings store the generated result and basic input details so the shared link can load later.
             </p>
             <p>
-              If ads are shown, Google and other third-party vendors may use cookies to serve ads based on prior visits to this site or other sites. Users can manage personalized advertising through Google's Ads Settings.
+              If ads are shown, Google and other third-party vendors may use cookies to serve ads based on prior visits to this site or other sites. Users can manage personalized advertising through Google&apos;s Ads Settings or other browser privacy controls.
+            </p>
+            <p>
+              Basic technical data such as browser, device, approximate location, referrer, and usage events may be processed by hosting, analytics, security, or advertising providers to keep the site working and understand what people actually use.
             </p>
             <p>
               Do not enter information you consider highly sensitive. Future payment features should be handled by a payment processor; this site should not store full card numbers.
@@ -1878,7 +1882,7 @@ function StaticPage({ path }: { path: string }) {
               Astrology readings on this site are not professional advice and should not be used for decisions involving health, safety, money, law, or emergencies. Results may be blunt, comedic, and intentionally dramatic.
             </p>
             <p>
-              Do not misuse the sharing feature, attempt to break the service, or copy the site's original text and assets into a competing product without permission.
+              Do not misuse the sharing feature, spam requests, scrape the service at scale, attempt to break the service, or copy the site&apos;s original text and assets into a competing product without permission.
             </p>
           </>
         )}
@@ -1892,7 +1896,7 @@ function StaticPage({ path }: { path: string }) {
               Email: <a className="text-link" href="mailto:lotsofbears2@gmail.com">lotsofbears2@gmail.com</a>
             </p>
             <p>
-              Before AdSense submission, make sure this address is an inbox you actually control. The stars cannot receive compliance email on your behalf.
+              Please include the page URL and a short description if you are reporting a bug, privacy request, or content concern.
             </p>
           </>
         )}
@@ -2233,6 +2237,7 @@ function App() {
                     <span className="card-moon">{getServiceIcon(service.slug)}</span>
                     <b>{service.name}</b>
                     <em>{service.badge}</em>
+                    <span className="free-rite">Free beta</span>
                     <small>{service.summary}</small>
                   </a>
                 );
