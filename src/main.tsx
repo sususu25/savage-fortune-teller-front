@@ -11,7 +11,6 @@ import {
   Heart,
   HelpCircle,
   Landmark,
-  FileDown,
   Home,
   Mail,
   MapPin,
@@ -906,7 +905,7 @@ function DailyCardPull() {
   }
 
   return (
-    <div className="daily-card-tool">
+    <div className={card ? "daily-card-tool has-card" : "daily-card-tool"}>
       <div className={card ? "tarot-spread has-selection" : "tarot-spread"} aria-label="Choose one SFT card">
         {FORTUNE_CARDS.map((item, index) => (
           <button
@@ -914,48 +913,43 @@ function DailyCardPull() {
             key={item.name}
             type="button"
             onClick={() => chooseCard(index)}
-            style={{ ...getTarotSpriteStyle(item.spriteIndex), "--fan-tilt": `${[-9, -4, 2, 7, -2, 5][index]}deg` } as React.CSSProperties}
+            style={{
+              ...getTarotSpriteStyle(item.spriteIndex),
+              "--card-x": `${[4, 18, 32, 46, 60, 74][index]}%`,
+              "--card-y": `${[58, 52, 56, 50, 57, 53][index]}%`,
+              "--fan-tilt": `${[-13, -7, -2, 4, 9, 14][index]}deg`,
+            } as React.CSSProperties}
+            aria-label={`Pull ${item.name}`}
           >
             <span className="tarot-image" />
-            <b>{item.name}</b>
+            <span className="sr-only">{item.name}</span>
           </button>
         ))}
+        <div className="daily-table-prompt">
+          <p className="eyebrow">{card ? "Card pulled" : "Choose one"}</p>
+          <h2>{card ? "The card has turned." : "Pick a card from the table."}</h2>
+          <p>{card ? "The front is awake. Unfortunately, so is the advice." : "They all look innocent from the back. This is how they get you."}</p>
+        </div>
       </div>
-      <article className={card ? "drawn-card active" : "drawn-card"}>
-        {card ? (
-          <>
+      {card && (
+        <div className="daily-card-copy">
+          <p className="eyebrow">Today&apos;s symbolic evidence</p>
+          <div className="drawn-card active">
             <span className="drawn-card-image" style={getTarotSpriteStyle(card.spriteIndex)} />
-            <h2>{card.name}</h2>
-            <p>{card.subtitle}</p>
-          </>
-        ) : (
-          <>
-            <span>SFT</span>
-            <h2>Pick the card that looks like it knows too much.</h2>
-            <p>The deck will stay quiet until you choose your problem.</p>
-          </>
-        )}
-      </article>
-      <div className="daily-card-copy">
-        <p className="eyebrow">Today&apos;s symbolic evidence</p>
-        {card ? (
-          <>
-            <h3>{card.verdict}</h3>
-            <p><b>Receipt:</b> {card.receipt}</p>
-            <p><b>Court-ordered advice:</b> {card.advice}</p>
-            <button type="button" className="secondary-button" onClick={() => setCardIndex(null)}>
-              <Shuffle size={17} />
-              Reset the spread
-            </button>
-          </>
-        ) : (
-          <>
-            <h3>The cards are spread. One of them is being rude in your direction.</h3>
-            <p><b>Receipt:</b> SFT cards use symbolic astrology-style meanings: Mercury for messages, Venus for value, Saturn for consequences.</p>
-            <p><b>Court-ordered advice:</b> Click one card. Do not overthink it unless overthinking is your brand.</p>
-          </>
-        )}
-      </div>
+            <div>
+              <h2>{card.name}</h2>
+              <p>{card.subtitle}</p>
+            </div>
+          </div>
+          <h3>{card.verdict}</h3>
+          <p><b>Receipt:</b> {card.receipt}</p>
+          <p><b>Court-ordered advice:</b> {card.advice}</p>
+          <button type="button" className="secondary-button" onClick={() => setCardIndex(null)}>
+            <Shuffle size={17} />
+            Reset the spread
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -1919,7 +1913,6 @@ function App() {
   const [shareLoading, setShareLoading] = React.useState(false);
   const [shareLink, setShareLink] = React.useState("");
   const [copied, setCopied] = React.useState(false);
-  const [premiumNotice, setPremiumNotice] = React.useState(false);
   const [error, setError] = React.useState("");
 
   if (isStaticPage) {
@@ -2070,7 +2063,6 @@ function App() {
     setIsRevealing(false);
     setShareLink("");
     setCopied(false);
-    setPremiumNotice(false);
 
     try {
       const response = await fetch(`${API_BASE_URL}/readings`, {
@@ -2173,7 +2165,6 @@ function App() {
     setLoading(false);
     setShareLink("");
     setCopied(false);
-    setPremiumNotice(false);
     setError("");
 
     if (window.location.pathname.startsWith("/r/")) {
@@ -2469,14 +2460,6 @@ function App() {
                 {shareLoading ? "Creating link" : "Share result"}
               </button>
               <button
-                className="pdf-button"
-                type="button"
-                onClick={() => setPremiumNotice(true)}
-              >
-                <FileDown size={17} />
-                PDF report - $2
-              </button>
-              <button
                 className="secondary-button"
                 type="button"
                 onClick={startNewReading}
@@ -2485,11 +2468,6 @@ function App() {
                 New roast
               </button>
             </div>
-            {premiumNotice && (
-              <p className="premium-note">
-                Premium PDF is being kept behind the velvet rope for now. Payment and download access are coming soon.
-              </p>
-            )}
             {shareLink && (
               <div className="share-tools">
                 <div className="share-url" title={shareLink}>

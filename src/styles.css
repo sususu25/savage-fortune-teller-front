@@ -54,9 +54,10 @@ button {
 
 .fortune-stage {
   position: relative;
-  min-height: 100vh;
-  padding: 24px;
-  overflow: hidden;
+  min-height: 100svh;
+  padding: 18px 24px 80px;
+  overflow-x: hidden;
+  overflow-y: visible;
   background:
     linear-gradient(90deg, rgba(3, 5, 9, 0.9) 0%, rgba(5, 6, 10, 0.58) 44%, rgba(4, 5, 8, 0.72) 100%),
     linear-gradient(180deg, rgba(4, 5, 8, 0.35) 0%, rgba(4, 5, 8, 0.82) 100%),
@@ -92,16 +93,16 @@ button {
 }
 
 .fortune-hero-copy {
-  width: min(100%, 620px);
-  margin: 58px 0 10px max(0px, calc((100vw - 1120px) / 2));
+  width: min(100%, 570px);
+  margin: 34px 0 8px max(0px, calc((100vw - 1120px) / 2));
   text-align: left;
 }
 
 .fortune-hero-copy h1 {
   margin: 0 0 14px;
-  max-width: 620px;
+  max-width: 570px;
   color: #f7e6bd;
-  font-size: clamp(32px, 4.4vw, 50px);
+  font-size: clamp(30px, 4vw, 46px);
   line-height: 1.02;
   text-shadow: 0 0 34px rgba(139, 76, 211, 0.32);
 }
@@ -116,7 +117,7 @@ button {
 
 .fortune-table {
   width: min(100%, 1100px);
-  margin: 34px auto 0;
+  margin: 22px auto 0;
 }
 
 .seer-scene {
@@ -176,16 +177,16 @@ button {
 .service-card-table {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(10px, 1.6vw, 18px);
+  gap: clamp(8px, 1.2vw, 14px);
   align-items: stretch;
   margin-top: 0;
 }
 
 .fortune-choice-card {
   position: relative;
-  min-height: 178px;
+  min-height: 148px;
   border: 1px solid rgba(224, 191, 110, 0.62);
-  padding: 15px;
+  padding: 12px;
   color: #eedeb8;
   background:
     radial-gradient(circle at 50% 38%, rgba(238, 202, 116, 0.16), transparent 27%),
@@ -224,9 +225,9 @@ button {
 .card-moon {
   display: grid;
   place-items: center;
-  width: 48px;
+  width: 38px;
   aspect-ratio: 1;
-  margin: 4px auto 12px;
+  margin: 2px auto 8px;
   border: 1px solid rgba(224, 191, 110, 0.48);
   border-radius: 50%;
   color: #f3d78d;
@@ -237,13 +238,13 @@ button {
   display: block;
   color: #f7e6bd;
   font-family: "Cinzel Local", Georgia, serif;
-  font-size: clamp(17px, 1.8vw, 23px);
+  font-size: clamp(15px, 1.55vw, 20px);
   line-height: 1.08;
 }
 
 .fortune-choice-card em {
   display: inline-block;
-  margin-top: 10px;
+  margin-top: 7px;
   border: 1px solid rgba(158, 208, 202, 0.3);
   padding: 5px 8px;
   color: #9ed0ca;
@@ -255,19 +256,32 @@ button {
 
 .fortune-choice-card small {
   display: block;
-  margin-top: 14px;
+  margin-top: 9px;
   color: #cfc1a1;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.42;
 }
 
 .home-birth-form {
+  display: none;
   width: min(100%, 720px);
-  margin: 34px auto 0;
+  margin: 24px auto 0;
   border: 1px solid rgba(224, 191, 110, 0.36);
   padding: 18px;
   background: rgba(6, 8, 12, 0.78);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.44);
+}
+
+.home-birth-form:target {
+  display: grid;
+}
+
+.home-birth-form.birth-form {
+  display: none;
+}
+
+.home-birth-form.birth-form:target {
+  display: grid;
 }
 
 .form-header {
@@ -491,7 +505,6 @@ select:focus {
 
 .birth-form > button,
 .share-button,
-.pdf-button,
 .secondary-button {
   display: inline-flex;
   align-items: center;
@@ -511,7 +524,6 @@ select:focus {
 
 .birth-form > button:disabled,
 .share-button:disabled,
-.pdf-button:disabled,
 .secondary-button:disabled {
   cursor: wait;
   filter: grayscale(0.25) brightness(0.82);
@@ -781,32 +793,19 @@ h2 {
 }
 
 .share-button,
-.pdf-button,
 .secondary-button {
   width: fit-content;
   padding: 0 18px;
 }
 
-.pdf-button,
 .secondary-button {
   color: #f1d98f;
   background: rgba(9, 11, 15, 0.78);
 }
 
-.pdf-button:hover,
 .secondary-button:hover {
   color: #11100d;
   background: #e2c16e;
-}
-
-.premium-note {
-  max-width: 520px;
-  margin: 10px 0 0;
-  border-left: 2px solid rgba(226, 193, 110, 0.6);
-  padding-left: 12px;
-  color: #cfc1a1;
-  font-size: 13px;
-  line-height: 1.45;
 }
 
 .share-tools {
@@ -1357,51 +1356,109 @@ h2 {
 }
 
 .daily-card-tool {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(300px, 1.1fr) minmax(230px, 0.9fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
   gap: 18px;
-  align-items: stretch;
+  min-height: 620px;
   margin-top: 24px;
+  border: 1px solid rgba(201, 170, 99, 0.24);
+  padding: clamp(16px, 3vw, 28px);
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(4, 5, 8, 0.26), rgba(4, 5, 8, 0.42) 54%, rgba(4, 5, 8, 0.82)),
+    linear-gradient(180deg, rgba(4, 5, 8, 0.08), rgba(4, 5, 8, 0.62)),
+    url("/assets/sft-daily-table.webp") center / cover no-repeat,
+    #07090e;
+}
+
+.daily-card-tool::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 49% 48%, rgba(188, 92, 255, 0.18), transparent 16rem),
+    linear-gradient(180deg, transparent 60%, rgba(0, 0, 0, 0.62));
+}
+
+.tarot-spread,
+.daily-card-copy {
+  position: relative;
+  z-index: 1;
 }
 
 .tarot-spread {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  align-content: center;
-  perspective: 900px;
+  min-height: 560px;
+  perspective: 1100px;
+}
+
+.daily-card-tool:not(.has-card) .tarot-spread {
+  grid-column: 1 / -1;
 }
 
 .tarot-choice {
-  position: relative;
-  display: grid;
-  gap: 8px;
-  border: 1px solid rgba(226, 193, 110, 0.32);
-  padding: 7px;
+  position: absolute;
+  left: var(--card-x);
+  top: var(--card-y);
+  width: clamp(82px, 9vw, 118px);
+  aspect-ratio: 4 / 5.6;
+  border: 1px solid rgba(226, 193, 110, 0.56);
+  padding: 0;
   color: #d9c99e;
-  background: rgba(6, 8, 12, 0.72);
-  text-align: center;
-  transform: translateY(0) rotate(var(--fan-tilt));
-  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(226, 193, 110, 0.24), transparent 25%),
+    repeating-linear-gradient(45deg, rgba(226, 193, 110, 0.16) 0 1px, transparent 1px 9px),
+    linear-gradient(145deg, #220a32, #05060b 68%, #2b0b35);
+  box-shadow:
+    0 16px 30px rgba(0, 0, 0, 0.44),
+    inset 0 0 0 9px rgba(5, 6, 10, 0.76),
+    inset 0 0 0 11px rgba(226, 193, 110, 0.18);
+  transform: translate(-50%, -50%) rotate(var(--fan-tilt));
+  transform-origin: center 86%;
+  transition: transform 220ms ease, border-color 180ms ease, box-shadow 180ms ease, opacity 180ms ease, filter 180ms ease;
+}
+
+.tarot-choice::before {
+  content: "SFT";
+  position: absolute;
+  inset: 28% 22%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(226, 193, 110, 0.45);
+  color: #dfc47b;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  font-weight: 800;
 }
 
 .tarot-choice:hover,
 .tarot-choice:focus {
-  border-color: rgba(226, 193, 110, 0.82);
-  box-shadow: 0 0 28px rgba(160, 84, 223, 0.34);
-  transform: translateY(-10px) rotate(0deg);
+  border-color: rgba(226, 193, 110, 0.92);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.5), 0 0 40px rgba(176, 82, 255, 0.42), inset 0 0 0 9px rgba(5, 6, 10, 0.76);
+  transform: translate(-50%, -66%) rotate(0deg) scale(1.04);
 }
 
 .tarot-spread.has-selection .tarot-choice:not(.selected) {
   opacity: 0.52;
-  transform: translateY(8px) rotate(var(--fan-tilt)) scale(0.94);
+  filter: saturate(0.75) brightness(0.72);
 }
 
 .tarot-choice.selected {
-  z-index: 2;
-  border-color: rgba(226, 193, 110, 0.96);
-  box-shadow: 0 12px 42px rgba(0, 0, 0, 0.46), 0 0 38px rgba(160, 84, 223, 0.44);
-  transform: translateY(-18px) rotate(0deg) scale(1.04);
+  z-index: 4;
+  border-color: rgba(226, 193, 110, 0.98);
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.58), 0 0 58px rgba(176, 82, 255, 0.52);
+  transform: translate(-50%, -92%) rotate(0deg) scale(1.16);
+}
+
+.tarot-choice.selected::before {
+  content: "";
+  inset: 0;
+  border: 0;
+  background-image: url("/assets/sft-tarot-sprite.webp");
+  background-size: 300% 200%;
+  background-position: var(--sprite-x) var(--sprite-y);
+  background-repeat: no-repeat;
 }
 
 .tarot-image,
@@ -1414,32 +1471,39 @@ h2 {
 }
 
 .tarot-image {
-  width: 100%;
-  aspect-ratio: 4 / 5.6;
-  border: 1px solid rgba(226, 193, 110, 0.28);
+  display: none;
 }
 
-.tarot-choice b {
-  color: #f4e5bd;
-  font-family: "Cinzel Local", Georgia, serif;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.14;
+.daily-table-prompt {
+  position: absolute;
+  left: 5%;
+  bottom: 20px;
+  width: min(58%, 520px);
+  border: 1px solid rgba(226, 193, 110, 0.24);
+  padding: 14px;
+  color: #efe3c2;
+  background: rgba(5, 7, 11, 0.62);
+  backdrop-filter: blur(4px);
+}
+
+.daily-table-prompt h2 {
+  font-size: clamp(22px, 3vw, 34px);
+}
+
+.daily-table-prompt p {
+  margin: 0;
+  color: #d8c8aa;
 }
 
 .drawn-card {
   display: grid;
-  align-content: center;
-  justify-items: center;
-  min-height: 360px;
-  border: 1px solid rgba(226, 193, 110, 0.58);
-  padding: 16px;
-  background:
-    radial-gradient(circle at 50% 32%, rgba(226, 193, 110, 0.16), transparent 42%),
-    repeating-linear-gradient(45deg, rgba(226, 193, 110, 0.11) 0 1px, transparent 1px 12px),
-    #07090e;
-  box-shadow: inset 0 0 0 14px #090b10;
-  text-align: center;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  border: 1px solid rgba(226, 193, 110, 0.34);
+  padding: 12px;
+  background: rgba(5, 7, 11, 0.68);
 }
 
 .drawn-card.active {
@@ -1447,31 +1511,23 @@ h2 {
 }
 
 .drawn-card-image {
-  width: min(100%, 210px);
+  justify-self: center;
+  width: min(100%, 132px);
   aspect-ratio: 4 / 5.6;
   border: 1px solid rgba(226, 193, 110, 0.44);
   box-shadow: 0 18px 46px rgba(0, 0, 0, 0.46);
 }
 
-.drawn-card > span:not(.drawn-card-image) {
-  display: grid;
-  place-items: center;
-  width: 62px;
-  aspect-ratio: 1;
-  border: 1px solid rgba(226, 193, 110, 0.62);
-  color: #d8b867;
-  font-weight: 700;
-}
-
-.drawn-card .drawn-card-image {
-  display: block;
-  width: min(100%, 210px);
-  aspect-ratio: 4 / 5.6;
-}
-
 .drawn-card h2 {
-  margin: 18px 0 10px;
-  font-size: clamp(22px, 3vw, 30px);
+  margin: 0 0 6px;
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.08;
+  overflow-wrap: normal;
+  text-align: center;
+}
+
+.drawn-card p {
+  text-align: center;
 }
 
 .drawn-card p,
@@ -1480,17 +1536,19 @@ h2 {
 }
 
 .daily-card-copy {
-  grid-column: 1 / -1;
+  align-self: end;
   min-width: 0;
-  border-block: 1px solid rgba(201, 170, 99, 0.22);
-  padding-block: 18px;
+  border: 1px solid rgba(201, 170, 99, 0.28);
+  padding: 18px;
+  background: rgba(5, 7, 11, 0.76);
+  backdrop-filter: blur(5px);
 }
 
 .daily-card-copy h3 {
   margin-bottom: 14px;
   color: #f4e5bd;
   font-family: "Cinzel Local", Georgia, serif;
-  font-size: clamp(19px, 2vw, 25px);
+  font-size: clamp(20px, 2.4vw, 30px);
   line-height: 1.1;
 }
 
@@ -1504,6 +1562,18 @@ h2 {
 
 .daily-card-copy button {
   margin-top: 18px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @keyframes card-pop {
@@ -1577,6 +1647,19 @@ h2 {
 
   .daily-card-tool {
     grid-template-columns: 1fr;
+    min-height: 720px;
+  }
+
+  .tarot-spread {
+    min-height: 430px;
+  }
+
+  .daily-card-copy {
+    align-self: stretch;
+  }
+
+  .daily-table-prompt {
+    width: min(88%, 520px);
   }
 
   .result-card {
@@ -1596,7 +1679,7 @@ h2 {
   }
 
   .fortune-choice-card {
-    min-height: 190px;
+    min-height: 148px;
     transform: none;
   }
 
@@ -1611,7 +1694,7 @@ h2 {
   }
 
   .birth-form {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .home-birth-form,
@@ -1620,7 +1703,7 @@ h2 {
   }
 
   .fortune-hero-copy h1 {
-    font-size: 34px;
+    font-size: 31px;
   }
 
   .fortune-hero-copy {
@@ -1628,17 +1711,21 @@ h2 {
   }
 
   .service-card-table {
-    gap: 12px;
+    gap: 10px;
   }
 
   .fortune-choice-card {
-    min-height: 176px;
-    padding: 15px;
+    min-height: 128px;
+    padding: 12px;
   }
 
   .card-moon {
-    width: 54px;
-    margin-bottom: 12px;
+    width: 42px;
+    margin-bottom: 8px;
+  }
+
+  .fortune-choice-card small {
+    font-size: 10px;
   }
 
   h1 {
@@ -1650,17 +1737,37 @@ h2 {
   }
 
   .tarot-spread {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 7px;
+    min-height: 370px;
   }
 
   .tarot-choice {
-    padding: 5px;
-    transform: none;
+    width: clamp(62px, 18vw, 82px);
   }
 
-  .tarot-choice b {
-    font-size: 9px;
+  .daily-card-tool {
+    min-height: 680px;
+    padding: 12px;
+    background-position: center top;
+  }
+
+  .daily-table-prompt {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    padding: 12px;
+  }
+
+  .daily-table-prompt h2 {
+    font-size: 22px;
+  }
+
+  .drawn-card {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-card-copy {
+    padding: 14px;
   }
 
   .result-card {
