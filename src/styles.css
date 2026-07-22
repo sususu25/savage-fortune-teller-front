@@ -59,8 +59,8 @@ button {
   overflow-x: hidden;
   overflow-y: visible;
   background:
-    linear-gradient(90deg, rgba(3, 5, 9, 0.9) 0%, rgba(5, 6, 10, 0.58) 44%, rgba(4, 5, 8, 0.72) 100%),
-    linear-gradient(180deg, rgba(4, 5, 8, 0.35) 0%, rgba(4, 5, 8, 0.82) 100%),
+    linear-gradient(90deg, rgba(3, 5, 9, 0.44) 0%, rgba(32, 12, 43, 0.14) 43%, rgba(4, 5, 8, 0.32) 100%),
+    linear-gradient(180deg, rgba(4, 5, 8, 0.02) 0%, rgba(14, 5, 18, 0.18) 58%, rgba(4, 5, 8, 0.52) 100%),
     url("/assets/sft-hero.webp") center / cover no-repeat,
     #050407;
 }
@@ -75,8 +75,9 @@ button {
 
 .fortune-stage::before {
   background:
-    linear-gradient(90deg, rgba(5, 6, 10, 0.56), transparent 28%, transparent 76%, rgba(5, 6, 10, 0.42)),
-    repeating-linear-gradient(90deg, transparent 0 68px, rgba(235, 174, 80, 0.035) 68px 70px);
+    radial-gradient(circle at 31% 47%, rgba(136, 63, 176, 0.24), transparent 23rem),
+    radial-gradient(circle at 76% 35%, rgba(226, 154, 79, 0.2), transparent 22rem),
+    linear-gradient(90deg, rgba(5, 6, 10, 0.16), transparent 34%, transparent 72%, rgba(5, 6, 10, 0.12));
 }
 
 .fortune-stage::after {
@@ -84,7 +85,7 @@ button {
     radial-gradient(circle at 42% 16%, rgba(255, 255, 255, 0.09), transparent 2px),
     radial-gradient(circle at 53% 24%, rgba(255, 255, 255, 0.13), transparent 1px),
     radial-gradient(circle at 70% 19%, rgba(255, 255, 255, 0.11), transparent 1px),
-    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.16) 100%);
 }
 
 .fortune-stage > * {
@@ -189,9 +190,10 @@ button {
   padding: 12px;
   color: #eedeb8;
   background:
-    radial-gradient(circle at 50% 38%, rgba(238, 202, 116, 0.16), transparent 27%),
-    linear-gradient(150deg, rgba(75, 23, 94, 0.92), rgba(7, 6, 12, 0.96) 52%, rgba(42, 12, 56, 0.92)),
-    #09070e;
+    radial-gradient(circle at 50% 28%, rgba(238, 202, 116, 0.18), transparent 30%),
+    linear-gradient(150deg, rgba(76, 21, 91, 0.68), rgba(7, 6, 12, 0.76) 58%, rgba(43, 12, 55, 0.68)),
+    rgba(9, 7, 14, 0.66);
+  backdrop-filter: blur(2px);
   box-shadow:
     0 22px 54px rgba(0, 0, 0, 0.48),
     inset 0 0 0 9px rgba(7, 5, 12, 0.84),
@@ -704,14 +706,28 @@ select:focus {
 }
 
 .service-loading-panel {
-  max-width: 720px;
-  margin: 24px 0 0;
+  max-width: 860px;
+  min-height: min(74vh, 720px);
+  margin: 18px auto 0;
   border: 1px solid rgba(201, 170, 99, 0.22);
-  background: rgba(4, 6, 10, 0.38);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(154, 86, 214, 0.22), transparent 18rem),
+    radial-gradient(circle at 50% 58%, rgba(226, 193, 110, 0.08), transparent 19rem),
+    linear-gradient(180deg, rgba(12, 13, 20, 0.9), rgba(5, 7, 11, 0.78));
+  box-shadow:
+    0 30px 100px rgba(0, 0, 0, 0.46),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
 .service-loading-panel .tarot-back {
-  width: min(44vw, 180px);
+  width: min(34vw, 210px);
+}
+
+.service-workspace:has(.service-loading-panel) > .eyebrow,
+.service-workspace:has(.service-loading-panel) > h1,
+.service-workspace:has(.service-loading-panel) > .lede,
+.service-workspace:has(.service-loading-panel) > .service-form {
+  display: none;
 }
 
 .tarot-back.revealing {
@@ -1111,6 +1127,41 @@ h2 {
   padding: 24px;
 }
 
+.daily-page-shell {
+  position: relative;
+  min-height: 100svh;
+  overflow-x: hidden;
+  background:
+    linear-gradient(90deg, rgba(2, 3, 7, 0.5) 0%, rgba(18, 7, 28, 0.16) 45%, rgba(4, 5, 8, 0.38) 100%),
+    linear-gradient(180deg, rgba(4, 5, 8, 0.08) 0%, rgba(4, 5, 8, 0.22) 48%, rgba(2, 3, 7, 0.55) 100%),
+    url("/assets/sft-daily-table.webp") center / cover no-repeat,
+    #07090e;
+}
+
+.daily-page-shell::before,
+.daily-page-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.daily-page-shell::before {
+  background:
+    radial-gradient(circle at 49% 58%, rgba(181, 87, 245, 0.22), transparent 20rem),
+    radial-gradient(circle at 16% 28%, rgba(230, 163, 84, 0.14), transparent 16rem),
+    radial-gradient(circle at 80% 22%, rgba(235, 182, 95, 0.12), transparent 18rem);
+}
+
+.daily-page-shell::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.04) 0%, transparent 34%, rgba(0, 0, 0, 0.28) 100%);
+}
+
+.daily-page-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
 .content-page {
   width: min(100%, 980px);
   margin: 0 auto;
@@ -1125,6 +1176,25 @@ h2 {
 .content-shell .site-nav {
   width: min(100%, 980px);
   margin: 0 auto 16px;
+}
+
+.daily-page-shell .site-nav,
+.daily-page {
+  width: min(100%, 1120px);
+}
+
+.daily-page {
+  min-height: calc(100svh - 82px);
+  border: 0;
+  padding: clamp(18px, 3.5vw, 42px);
+  background: transparent;
+  box-shadow: none;
+}
+
+.content-page.daily-page > .eyebrow,
+.content-page.daily-page > h1,
+.content-page.daily-page > .lede {
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.82);
 }
 
 .content-page h1 {
@@ -1145,6 +1215,16 @@ h2 {
   color: #efe3c2;
   font-size: clamp(15px, 1.5vw, 18px);
   line-height: 1.42;
+}
+
+.content-page.daily-page > h1 {
+  max-width: 590px;
+  font-size: clamp(28px, 4vw, 46px);
+}
+
+.content-page.daily-page > .lede {
+  max-width: 650px;
+  color: #f1dfbd;
 }
 
 .text-link {
@@ -1360,16 +1440,14 @@ h2 {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
   gap: 18px;
-  min-height: 620px;
-  margin-top: 24px;
-  border: 1px solid rgba(201, 170, 99, 0.24);
-  padding: clamp(16px, 3vw, 28px);
+  min-height: 560px;
+  margin-top: 14px;
+  border: 0;
+  padding: 0;
   overflow: hidden;
   background:
-    linear-gradient(90deg, rgba(4, 5, 8, 0.26), rgba(4, 5, 8, 0.42) 54%, rgba(4, 5, 8, 0.82)),
-    linear-gradient(180deg, rgba(4, 5, 8, 0.08), rgba(4, 5, 8, 0.62)),
-    url("/assets/sft-daily-table.webp") center / cover no-repeat,
-    #07090e;
+    radial-gradient(ellipse at 46% 83%, rgba(5, 3, 7, 0.72) 0 22%, rgba(50, 21, 58, 0.26) 46%, transparent 72%),
+    linear-gradient(180deg, transparent 0%, rgba(4, 5, 8, 0.12) 46%, rgba(4, 5, 8, 0.35) 100%);
 }
 
 .daily-card-tool::after {
@@ -1378,8 +1456,8 @@ h2 {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 49% 48%, rgba(188, 92, 255, 0.18), transparent 16rem),
-    linear-gradient(180deg, transparent 60%, rgba(0, 0, 0, 0.62));
+    radial-gradient(circle at 50% 70%, rgba(188, 92, 255, 0.24), transparent 16rem),
+    radial-gradient(ellipse at 49% 81%, rgba(226, 193, 110, 0.12), transparent 18rem);
 }
 
 .tarot-spread,
@@ -1401,9 +1479,9 @@ h2 {
   position: absolute;
   left: var(--card-x);
   top: var(--card-y);
-  width: clamp(82px, 9vw, 118px);
+  width: clamp(76px, 8.2vw, 108px);
   aspect-ratio: 4 / 5.6;
-  border: 1px solid rgba(226, 193, 110, 0.56);
+  border: 1px solid rgba(226, 193, 110, 0.64);
   padding: 0;
   color: #d9c99e;
   background:
@@ -1411,7 +1489,7 @@ h2 {
     repeating-linear-gradient(45deg, rgba(226, 193, 110, 0.16) 0 1px, transparent 1px 9px),
     linear-gradient(145deg, #220a32, #05060b 68%, #2b0b35);
   box-shadow:
-    0 16px 30px rgba(0, 0, 0, 0.44),
+    0 18px 38px rgba(0, 0, 0, 0.5),
     inset 0 0 0 9px rgba(5, 6, 10, 0.76),
     inset 0 0 0 11px rgba(226, 193, 110, 0.18);
   transform: translate(-50%, -50%) rotate(var(--fan-tilt));
@@ -1477,12 +1555,12 @@ h2 {
 .daily-table-prompt {
   position: absolute;
   left: 5%;
-  bottom: 20px;
+  bottom: 18px;
   width: min(58%, 520px);
   border: 1px solid rgba(226, 193, 110, 0.24);
   padding: 14px;
   color: #efe3c2;
-  background: rgba(5, 7, 11, 0.62);
+  background: rgba(5, 7, 11, 0.48);
   backdrop-filter: blur(4px);
 }
 
@@ -1540,7 +1618,7 @@ h2 {
   min-width: 0;
   border: 1px solid rgba(201, 170, 99, 0.28);
   padding: 18px;
-  background: rgba(5, 7, 11, 0.76);
+  background: rgba(5, 7, 11, 0.72);
   backdrop-filter: blur(5px);
 }
 

@@ -110,6 +110,7 @@ type ThemedReadingPageConfig = {
   coordinateCopy: string;
   submitLabel: string;
   loadingLabel: string;
+  loadingCopy: string;
   errorPrefix: string;
   fallbackError: string;
   focusPoints: Array<{ key: string; label: string; icon: "heart" | "coins" | "landmark" | "moon" | "sparkles" | "sun" }>;
@@ -896,9 +897,30 @@ function getTarotSpriteStyle(spriteIndex: number) {
   } as React.CSSProperties;
 }
 
+const dailyCardPositions = [
+  [6, 65, -18],
+  [12, 58, -14],
+  [18, 62, -10],
+  [24, 56, -7],
+  [30, 60, -4],
+  [36, 54, -1],
+  [42, 59, 3],
+  [48, 53, 6],
+  [54, 58, 9],
+  [60, 52, 12],
+  [66, 57, 15],
+  [72, 51, 18],
+  [10, 72, -16],
+  [22, 70, -9],
+  [34, 72, -3],
+  [46, 69, 5],
+  [58, 71, 11],
+  [70, 68, 17],
+];
+
 function DailyCardPull() {
   const [cardIndex, setCardIndex] = React.useState<number | null>(null);
-  const card = cardIndex === null ? null : FORTUNE_CARDS[cardIndex];
+  const card = cardIndex === null ? null : FORTUNE_CARDS[cardIndex % FORTUNE_CARDS.length];
 
   function chooseCard(index: number) {
     setCardIndex(index);
@@ -907,24 +929,26 @@ function DailyCardPull() {
   return (
     <div className={card ? "daily-card-tool has-card" : "daily-card-tool"}>
       <div className={card ? "tarot-spread has-selection" : "tarot-spread"} aria-label="Choose one SFT card">
-        {FORTUNE_CARDS.map((item, index) => (
+        {dailyCardPositions.map(([x, y, tilt], index) => {
+          const item = FORTUNE_CARDS[index % FORTUNE_CARDS.length];
+          return (
           <button
             className={cardIndex === index ? "tarot-choice selected" : "tarot-choice"}
-            key={item.name}
+            key={`${item.name}-${index}`}
             type="button"
             onClick={() => chooseCard(index)}
             style={{
               ...getTarotSpriteStyle(item.spriteIndex),
-              "--card-x": `${[4, 18, 32, 46, 60, 74][index]}%`,
-              "--card-y": `${[58, 52, 56, 50, 57, 53][index]}%`,
-              "--fan-tilt": `${[-13, -7, -2, 4, 9, 14][index]}deg`,
+              "--card-x": `${x}%`,
+              "--card-y": `${y}%`,
+              "--fan-tilt": `${tilt}deg`,
             } as React.CSSProperties}
-            aria-label={`Pull ${item.name}`}
+            aria-label="Pull one face-down SFT card"
           >
             <span className="tarot-image" />
             <span className="sr-only">{item.name}</span>
           </button>
-        ))}
+        )})}
         <div className="daily-table-prompt">
           <p className="eyebrow">{card ? "Card pulled" : "Choose one"}</p>
           <h2>{card ? "The card has turned." : "Pick a card from the table."}</h2>
@@ -978,6 +1002,7 @@ const THEMED_READING_CONFIGS: Record<string, ThemedReadingPageConfig> = {
     coordinateCopy: "Venus, Jupiter, Saturn, and money houses need coordinates.",
     submitLabel: "Audit my money curse",
     loadingLabel: "Auditing the bank account aura",
+    loadingCopy: "Venus is checking the receipts. Jupiter is exaggerating. Saturn has opened a spreadsheet and nobody is safe.",
     errorPrefix: "The money court returned",
     fallbackError: "The money court refused to open the books.",
     focusPoints: [
@@ -996,6 +1021,7 @@ const THEMED_READING_CONFIGS: Record<string, ThemedReadingPageConfig> = {
     coordinateCopy: "Sun, Saturn, Midheaven, and work houses need coordinates.",
     submitLabel: "Roast my career arc",
     loadingLabel: "Reviewing your public file",
+    loadingCopy: "The Midheaven is being questioned under candlelight. Your ambition has requested legal representation.",
     errorPrefix: "The career board returned",
     fallbackError: "The career board tabled your case.",
     focusPoints: [
@@ -1014,6 +1040,7 @@ const THEMED_READING_CONFIGS: Record<string, ThemedReadingPageConfig> = {
     coordinateCopy: "Moon, Mars, Saturn, and pressure houses need coordinates.",
     submitLabel: "Forecast my damage",
     loadingLabel: "Checking the burnout weather",
+    loadingCopy: "Moon, Mars, and Saturn are arguing over whether this is stress, drama, or a lifestyle brand.",
     errorPrefix: "The energy desk returned",
     fallbackError: "The energy desk went offline.",
     focusPoints: [
@@ -1222,7 +1249,7 @@ function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
           <ServiceLoadingPanel
             eyebrow={config.eyebrow}
             title={config.loadingLabel}
-            copy="The chart is being cross-examined. Please wait while the evidence arranges itself into an accusation."
+            copy={config.loadingCopy}
           />
         )}
 
@@ -1626,9 +1653,9 @@ function StaticPage({ path }: { path: string }) {
 
   if (cleanPath === "/daily-card") {
     return (
-      <main className="content-shell">
+      <main className="content-shell daily-page-shell">
         <SiteNav />
-        <section className="content-page">
+        <section className="content-page daily-page">
           <p className="eyebrow">Daily Card Pull</p>
           <h1>A one-card omen with receipts.</h1>
           <p className="lede">
