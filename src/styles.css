@@ -967,7 +967,8 @@ h2 {
 
 .site-nav a,
 .policy-links a,
-.site-footer a {
+.site-footer a,
+.contact-point a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -993,6 +994,7 @@ h2 {
 .site-nav a:hover,
 .policy-links a:hover,
 .site-footer a:hover,
+.contact-point a:hover,
 .text-link:hover {
   border-color: rgba(226, 193, 110, 0.72);
   color: #f4e5bd;
@@ -1139,6 +1141,38 @@ h2 {
   margin-top: 24px;
   border-top: 1px solid rgba(201, 170, 99, 0.18);
   padding-top: 16px;
+}
+
+.contact-point {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: min(100%, 980px);
+  margin: 18px auto 0;
+  color: rgba(207, 193, 161, 0.72);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.contact-point span {
+  padding: 8px 4px;
+  color: rgba(244, 229, 189, 0.72);
+  text-transform: uppercase;
+}
+
+.contact-point a {
+  border-color: rgba(201, 170, 99, 0.16);
+  padding: 7px 9px;
+  color: rgba(217, 201, 158, 0.72);
+  background: rgba(5, 7, 11, 0.32);
+  font-size: 11px;
+}
+
+.fortune-stage .contact-point,
+.daily-page-shell .contact-point {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.82);
 }
 
 .content-shell {

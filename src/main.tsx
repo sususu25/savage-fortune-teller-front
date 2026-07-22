@@ -869,6 +869,18 @@ function SiteNav() {
   );
 }
 
+function ContactPoint() {
+  return (
+    <footer className="contact-point" aria-label="Site contact and policy links">
+      <span>Savage Fortune Teller</span>
+      <a href="/contact">Contact</a>
+      <a href="mailto:lotsofbears2@gmail.com">lotsofbears2@gmail.com</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+    </footer>
+  );
+}
+
 function ServiceGrid() {
   return (
     <div className="service-grid">
@@ -1285,6 +1297,7 @@ function ThemedReadingPage({ config }: { config: ThemedReadingPageConfig }) {
           </section>
         )}
       </section>
+      <ContactPoint />
     </main>
   );
 }
@@ -1510,6 +1523,7 @@ function LoveLifeRoastPage() {
           </section>
         )}
       </section>
+      <ContactPoint />
     </main>
   );
 }
@@ -1648,6 +1662,7 @@ function StaticPage({ path }: { path: string }) {
           </p>
           <ServiceGrid />
         </section>
+        <ContactPoint />
       </main>
     );
   }
@@ -1664,6 +1679,7 @@ function StaticPage({ path }: { path: string }) {
           </p>
           <DailyCardPull />
         </section>
+        <ContactPoint />
       </main>
     );
   }
@@ -1695,6 +1711,7 @@ function StaticPage({ path }: { path: string }) {
             ))}
           </div>
         </section>
+        <ContactPoint />
       </main>
     );
   }
@@ -1728,6 +1745,7 @@ function StaticPage({ path }: { path: string }) {
           </div>
           <a className="text-link" href="/">Try the live Birth Chart Roast</a>
         </section>
+        <ContactPoint />
       </main>
     );
   }
@@ -1743,6 +1761,7 @@ function StaticPage({ path }: { path: string }) {
           <p>{article.body}</p>
           <a className="text-link" href="/articles">Back to all articles</a>
         </article>
+        <ContactPoint />
       </main>
     );
   }
@@ -1771,6 +1790,7 @@ function StaticPage({ path }: { path: string }) {
           </p>
           <a className="text-link" href="/archetypes">Back to all archetypes</a>
         </article>
+        <ContactPoint />
       </main>
     );
   }
@@ -1922,6 +1942,7 @@ function StaticPage({ path }: { path: string }) {
           </>
         )}
       </section>
+      <ContactPoint />
     </main>
   );
 }
@@ -2329,6 +2350,7 @@ function App() {
 
             {error && <div className="error home-error">{error}</div>}
           </div>
+          <ContactPoint />
         </section>
       </main>
     );
