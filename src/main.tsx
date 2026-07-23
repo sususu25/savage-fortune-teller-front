@@ -1037,7 +1037,6 @@ function ServiceGrid() {
           <a href={href} key={service.slug}>
             <span className="service-icon">{getServiceIcon(service.slug)}</span>
             <em>{service.badge}</em>
-            <span className="free-rite">Free beta</span>
             <b>{service.name}</b>
             <p>{service.summary}</p>
             <small>{service.science}</small>
@@ -2697,28 +2696,34 @@ function App() {
         <section className="fortune-stage">
           <SiteNav />
           <div className="fortune-hero-copy">
-            <p className="eyebrow">Savage Fortune Teller</p>
-            <h1>Pick a card. Get roasted, with receipts.</h1>
+            <p className="eyebrow">Free astrology reading</p>
+            <h1>Free Birth Chart Roast</h1>
             <p>
-              Astrology-backed roasts and fortune tools for people who want the stars to be accurate, funny, and only mildly legally concerning.
+              Enter your birth details and get a full-chart astrology roast with your Big 3, chart receipts, and one main verdict.
             </p>
+            <div className="home-hero-actions">
+              <a className="hero-primary-action" href="#birth-chart-roast-form">
+                <Sparkles size={18} />
+                Get my free birth chart
+              </a>
+              <span>Side readings are below, but the birth chart is the main event.</span>
+            </div>
           </div>
 
           <div className="fortune-table" aria-label="Savage fortune reading cards">
             <div className="service-card-table">
-              {SERVICES.map((service, index) => {
+              {SERVICES.map((service) => {
                 const href = service.slug === "birth-chart-roast" ? "#birth-chart-roast-form" : `/${service.slug}`;
+                const isFeatured = service.slug === "birth-chart-roast";
                 return (
                   <a
-                    className={service.slug === "birth-chart-roast" ? "fortune-choice-card featured" : "fortune-choice-card"}
+                    className={isFeatured ? "fortune-choice-card featured" : "fortune-choice-card"}
                     href={href}
                     key={service.slug}
-                    style={{ "--card-tilt": `${[-5, 2, 5, -2, 3, -4][index] ?? 0}deg` } as React.CSSProperties}
                   >
                     <span className="card-moon">{getServiceIcon(service.slug)}</span>
+                    <em>{isFeatured ? "Main reading" : "Extra reading"}</em>
                     <b>{service.name}</b>
-                    <em>{service.badge}</em>
-                    <span className="free-rite">Free beta</span>
                     <small>{service.summary}</small>
                   </a>
                 );
